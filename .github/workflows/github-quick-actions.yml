@@ -9,15 +9,37 @@ jobs:
   pre_checks:
     name: Is a quick actions?
     runs-on: ubuntu-latest
+    outputs:
+      isQuickAction: ${{ steps.isQuickAction.outputs.answer }}
+    steps:
+      - run: echo '${{ toJSON(github.event) }}'
+      - run: echo '${{ github.event.comment.body }}'
+      - id: isQuickAction
+        if: startsWith(github.event.comment.body, '/')
+        run: echo '::set-output name=answer::yes'
 
   pull_requests:
     name: Handle pull_requests actions
-    if: ${{ github.event.issue.pull_request }}
+    if: needs.pre_checks.outputs.isQuickAction && github.event.issue.pull_request
     needs: [ pre_checks ]
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v4
+        id: exec_cmd
+        if: ${{ startsWith(github.event.comment.body, '/assign ') }}
+        with:
+          script: |
+            const assignees = context.payload.comment.body.split(" ").slice(1)
+            console.log(github.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              assignees: assignees
+            }))
 
-  issues:
-    name: Handle issues actions
-    if: ${{ !github.event.issue.pull_request }}
-    needs: [ pre_checks ]
-    runs-on: ubuntu-latest
+
+#  issues:
+#    name: Handle issues actions
+#    if: ${{ !github.event.issue.pull_request }}
+#    needs: [ pre_checks ]
+#    runs-on: ubuntu-latest
