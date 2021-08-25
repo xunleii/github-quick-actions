@@ -1,0 +1,23 @@
+name: Github Quick Actions
+
+# NOTE: only trigger this Workflow on issue/pull request
+on:
+  issue_comment:
+    types: [ created ]
+
+jobs:
+  pre_checks:
+    name: Is a quick actions?
+    runs-on: ubuntu-latest
+
+  pull_requests:
+    name: Handle pull_requests actions
+    if: ${{ github.event.issue.pull_request }}
+    needs: [ pre_checks ]
+    runs-on: ubuntu-latest
+
+  issues:
+    name: Handle issues actions
+    if: ${{ !github.event.issue.pull_request }}
+    needs: [ pre_checks ]
+    runs-on: ubuntu-latest
