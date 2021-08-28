@@ -88,18 +88,20 @@ func (issue IssueQuickActions) Handle(ctx context.Context, eventType, deliveryID
 		return nil
 	}
 
-	var errs = &multierror.Error{}
+	var errs = &multierror.Group{}
 	for _, quickAction := range quickActions {
 		name := quickAction[0][1:]
 		args := quickAction[1:]
 
 		logger.Debug().Msgf("handle action '%s'", name)
-		err := issue.handlers[name](ctx, GithubQuickActionEvent{issue.ClientCreator, event, args})
-		if err != nil {
-			logger.Err(err).Msgf("failed to run '%s': %s", name, err)
-			errs = multierror.Append(errs, err)
-		}
+		errs.Go(func() error {
+			err := issue.handlers[name](ctx, GithubQuickActionEvent{issue.ClientCreator, event, args})
+			if err != nil {
+				logger.Err(err).Msgf("failed to run '%s': %s", name, err)
+			}
+			return err
+		})
 	}
 
-	return errs.ErrorOrNil()
+	return errs.Wait().ErrorOrNil()
 }

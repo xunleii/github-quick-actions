@@ -2,7 +2,6 @@ package serverless
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"os"
 	"time"
@@ -11,7 +10,6 @@ import (
 	"github.com/awslabs/aws-lambda-go-api-proxy/gorillamux"
 	"github.com/gorilla/mux"
 	"github.com/gregjones/httpcache"
-	"github.com/hashicorp/go-multierror"
 	"github.com/palantir/go-githubapp/githubapp"
 	"github.com/rs/zerolog"
 
@@ -68,7 +66,7 @@ func init() {
 	app := githubapp.NewEventDispatcher(
 		[]githubapp.EventHandler{issueQuickActions},
 		appConfig.App.WebhookSecret,
-		githubapp.WithErrorCallback(githubappErrorCallback),
+		githubapp.WithErrorCallback(quick_action.HttpErrorCallback),
 	)
 
 	r := mux.NewRouter()
@@ -83,30 +81,6 @@ func init() {
 	muxLambda = gorillamux.New(r)
 }
 
-func githubappErrorCallback(w http.ResponseWriter, r *http.Request, err error) {
-	logger := zerolog.Ctx(r.Context())
-
-	errs, valid := err.(*multierror.Error)
-	if !valid {
-		// not handled errors
-		return
-	}
-
-	var errors []string
-	for _, err := range errs.WrappedErrors() {
-		errors = append(errors, err.Error())
-	}
-
-	json, err := json.Marshal(map[string][]string{"errors": errors})
-	logger.Debug().RawJSON("body", json).Err(err).Send()
-	if err != nil {
-		logger.Error().Err(err).Send()
-	}
-
-	w.Header().Add("Content-Type", "application/json")
-	_, _ = w.Write(json)
-	w.WriteHeader(http.StatusInternalServerError)
-}
 
 func AWSLambdaHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	zerolog.Ctx(ctx).Trace().Interface("event", event).Send()

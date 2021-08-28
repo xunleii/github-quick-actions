@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-	"net"
 	"net/http"
 	"os"
 	"time"
@@ -49,16 +47,24 @@ func main() {
 	issueQuickActions.AddQuickAction("assign", quick_actions.Assign)
 	issueQuickActions.AddQuickAction("unassign", quick_actions.Unassign)
 
-	webhookHandler := githubapp.NewDefaultEventDispatcher(appConfig, issueQuickActions)
+	app := githubapp.NewEventDispatcher(
+		[]githubapp.EventHandler{issueQuickActions},
+		appConfig.App.WebhookSecret,
+		githubapp.WithErrorCallback(quick_action.HttpErrorCallback),
+	)
 
 	r := mux.NewRouter()
-	r.Handle(config.ListenPath, webhookHandler)
+	r.Handle(config.ListenPath, app)
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			logctx := logger.WithContext(request.Context())
+			next.ServeHTTP(writer, request.WithContext(logctx))
+		})
+	})
 
-	ctx := logger.WithContext(context.Background())
 	srv := &http.Server{
-		BaseContext: func(_ net.Listener) context.Context { return ctx },
-		Handler:     http.HandlerFunc(func(wr http.ResponseWriter, rq *http.Request) { r.ServeHTTP(wr, rq.WithContext(ctx)) }),
-		Addr:        config.ListenAddr,
+		Handler: r,
+		Addr:    config.ListenAddr,
 
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
