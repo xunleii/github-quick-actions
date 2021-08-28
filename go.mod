@@ -3,6 +3,7 @@ module xnku.be/github-quick-actions
 go 1.17
 
 require (
+	github.com/alecthomas/kong v0.2.17
 	github.com/google/go-github/v38 v38.1.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
@@ -11,6 +12,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/common v0.30.0
 	github.com/rs/zerolog v1.24.0
+	github.com/scaleway/scaleway-functions-go v0.0.0-20201119104420-4e68d6a64a4d
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
 
@@ -21,6 +23,8 @@ require (
 	github.com/bradleyfalzon/ghinstallation v1.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/go-kit/log v0.1.0 // indirect
+	github.com/go-logfmt/logfmt v0.5.0 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-github/v29 v29.0.3 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
