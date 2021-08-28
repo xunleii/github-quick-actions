@@ -20,14 +20,14 @@ import (
 )
 
 func main() {
+	// define logger before anything
+	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
+
 	config := cmd.CLIConfig{}
 	kong.Parse(&config, kong.Vars{"version": version.Info()})
 
-	// NOTE: define logger before logging possible errors
 	llvl, _ := zerolog.ParseLevel(config.LogLevel)
-	logger := zerolog.New(os.Stdout).
-		With().Timestamp().Logger().
-		Level(llvl)
+	logger = logger.Level(llvl)
 
 	appConfig, err := config.GithubAppConfig()
 	if err != nil {

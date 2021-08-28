@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net/url"
@@ -90,6 +91,12 @@ func (c CLIConfig) GithubAppConfig() (githubapp.Config, error) {
 		config.App.PrivateKey = string(pkey)
 	}
 
+	// allow base64 encode values
+	b64, err := base64.RawStdEncoding.DecodeString(config.App.PrivateKey)
+	if err != nil {
+		config.App.PrivateKey = string(b64)
+	}
+
 	return config, nil
 }
 
@@ -99,6 +106,19 @@ var envVarsDefinitions = map[string]struct {
 	defaults func(*CLIConfig) error
 	set      func(*CLIConfig, string) error
 }{
+	"GQA_LOG_LEVEL": {
+		defaults: func(config *CLIConfig) (err error) { config.LogLevel = "info"; return },
+		set:      func(config *CLIConfig, s string) (err error) { config.LogLevel = s; return },
+	},
+	"GQA_LISTEN_ADDR": {
+		defaults: func(config *CLIConfig) (err error) { config.ListenAddr = "localhost:3000"; return },
+		set:      func(config *CLIConfig, s string) (err error) { config.ListenAddr = s; return },
+	},
+	"GQA_LISTEN_PATH": {
+		defaults: func(config *CLIConfig) (err error) { config.ListenPath = "/api/v1/webhook"; return },
+		set:      func(config *CLIConfig, s string) (err error) { config.ListenPath = s; return },
+	},
+
 	"GQA_GITHUB_API_VERSION": {
 		defaults: func(config *CLIConfig) (err error) { config.Github.APIVersion = "v3"; return },
 		set:      func(config *CLIConfig, s string) (err error) { config.Github.APIVersion = s; return },
@@ -132,18 +152,5 @@ var envVarsDefinitions = map[string]struct {
 	"GQA_GITHUB_PKEY": {
 		defaults: func(_ *CLIConfig) error { return fmt.Errorf("variable is required") },
 		set:      func(config *CLIConfig, s string) (err error) { config.Github.Application.Pkey = s; return },
-	},
-
-	"GQA_LISTEN_ADDR": {
-		defaults: func(config *CLIConfig) (err error) { config.ListenAddr = "localhost:3000"; return },
-		set:      func(config *CLIConfig, s string) (err error) { config.ListenAddr = s; return },
-	},
-	"GQA_LISTEN_PATH": {
-		defaults: func(config *CLIConfig) (err error) { config.ListenPath = "/api/v1/webhook"; return },
-		set:      func(config *CLIConfig, s string) (err error) { config.ListenPath = s; return },
-	},
-	"GQA_LOG_LEVEL": {
-		defaults: func(config *CLIConfig) (err error) { config.LogLevel = "info"; return },
-		set:      func(config *CLIConfig, s string) (err error) { config.LogLevel = s; return },
 	},
 }
