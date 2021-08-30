@@ -1,4 +1,5 @@
-// +build aws_lambda
+//go:binary-only-package
+//+build aws_lambda
 
 package main
 
