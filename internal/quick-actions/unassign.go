@@ -2,6 +2,7 @@ package quick_actions
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/rs/zerolog"
@@ -14,29 +15,34 @@ func Unassign(ctx context.Context, event GithubQuickActionEvent) error {
 		Str("quick_action", "unassign").
 		Logger()
 
-	logger.Debug().Msgf("handle `/unassign` (args: %v)", event.Args)
+	issueEvent, valid := event.(*IssueQuickActionEvent)
+	if !valid {
+		return fmt.Errorf("invalid event type; only accept %T but get %T", issueEvent, event)
+	}
+
+	logger.Debug().Msgf("handle `/unassign` (args: %v)", issueEvent.Arguments())
 
 	var assignees []string
-	for _, assignee := range event.Args {
+	for _, assignee := range issueEvent.Arguments() {
 		switch {
 		case assignee == "@" || assignee == "":
 			// ignore empty assignees
 		case assignee == "me":
-			assignees = append(assignees, event.GetComment().GetUser().GetLogin())
+			assignees = append(assignees, issueEvent.GetComment().GetUser().GetLogin())
 		case strings.HasPrefix(assignee, "@"):
 			assignees = append(assignees, assignee[1:])
 		}
 	}
 
-	client, err := event.NewInstallationClient(event.GetInstallation().GetID())
+	client, err := issueEvent.NewInstallationClient(issueEvent.GetInstallation().GetID())
 	if err != nil {
 		zerolog.Ctx(ctx).Error().Err(err).Send()
 		return err
 	}
 
-	owner := event.GetRepo().GetOwner().GetLogin()
-	repo := event.GetRepo().GetName()
-	noIssue := event.GetIssue().GetNumber()
+	owner := issueEvent.GetRepo().GetOwner().GetLogin()
+	repo := issueEvent.GetRepo().GetName()
+	noIssue := issueEvent.GetIssue().GetNumber()
 
 	_, _, err = client.Issues.RemoveAssignees(ctx, owner, repo, noIssue, assignees)
 

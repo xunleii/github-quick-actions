@@ -3,7 +3,6 @@ package quick_action
 import (
 	"context"
 
-	"github.com/google/go-github/v38/github"
 	"github.com/palantir/go-githubapp/githubapp"
 )
 
@@ -16,14 +15,14 @@ type GithubQuickActions interface {
 }
 
 // GithubQuickActionEvent contains all information and arguments from a quick action event.
-type GithubQuickActionEvent struct {
+type GithubQuickActionEvent interface {
 	// inherit of ClientCreator methods
 	githubapp.ClientCreator
-	// inherit EventPayload structure
-	github.IssueCommentEvent
+	// force github.*Event structure
+	githubapp.InstallationSource
 
-	// List of action arguments
-	Args []string
+	// Args list of action arguments
+	Arguments() []string
 }
 
 // GithubQuickActionHandler define how a specific command should be handled. This is the

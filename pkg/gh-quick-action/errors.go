@@ -5,14 +5,13 @@ import (
 	"net/http"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/rs/zerolog"
 )
 
 // HttpErrorCallback handles errors from Quick Actions.
 func HttpErrorCallback(w http.ResponseWriter, r *http.Request, err error) {
 	errs, valid := err.(*multierror.Error)
 	if !valid {
-		// not handled errors
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -21,14 +20,10 @@ func HttpErrorCallback(w http.ResponseWriter, r *http.Request, err error) {
 		errors = append(errors, err.Error())
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	json, err := json.Marshal(map[string][]string{"errors": errors})
-	if err != nil {
-		zerolog.Ctx(r.Context()).Error().Err(err).Send()
-		w.Header().Set("Content-Type", "application/txt")
-		json = []byte(errs.Error())
-	}
+	json, _ := json.Marshal(map[string][]string{"errors": errors})
 
-	_, _ = w.Write(json)
+	w.Header().Add("Content-Type", "application/json")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(http.StatusInternalServerError)
+	_, _ = w.Write(json)
 }
