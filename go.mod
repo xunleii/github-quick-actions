@@ -18,6 +18,7 @@ require (
 	github.com/rs/zerolog v1.24.0
 	github.com/shurcooL/githubv4 v0.0.0-20191127044304-8f68eb5628d0
 	github.com/stretchr/testify v1.7.0
+	github.com/thoas/go-funk v0.9.0
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 )
 

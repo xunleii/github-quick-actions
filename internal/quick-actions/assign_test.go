@@ -91,6 +91,16 @@ var AssignIssueCommentFixtures = fixtures.EventFixtures{
 		},
 
 		{
+			Name:      "invalid assignee",
+			Arguments: []string{"@"},
+			APICalls:  map[string]fixtures.APICallMITM{},
+		},
+		{
+			Name:      "empty assignee",
+			Arguments: []string{""},
+			APICalls:  map[string]fixtures.APICallMITM{},
+		},
+		{
 			Name:      "repository/owner not found",
 			Arguments: []string{"@mojombo"},
 			APICalls: map[string]fixtures.APICallMITM{
