@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog"
+	"github.com/thoas/go-funk"
 
 	. "xnku.be/github-quick-actions/pkg/gh-quick-action"
 )
@@ -34,6 +35,11 @@ func Unassign(ctx context.Context, event GithubQuickActionEvent) error {
 		}
 	}
 
+	if len(assignees) == 0 {
+		// do nothing if no assignees
+		return nil
+	}
+
 	client, err := issueEvent.NewInstallationClient(issueEvent.GetInstallation().GetID())
 	if err != nil {
 		zerolog.Ctx(ctx).Error().Err(err).Send()
@@ -44,7 +50,7 @@ func Unassign(ctx context.Context, event GithubQuickActionEvent) error {
 	repo := issueEvent.GetRepo().GetName()
 	noIssue := issueEvent.GetIssue().GetNumber()
 
-	_, _, err = client.Issues.RemoveAssignees(ctx, owner, repo, noIssue, assignees)
+	_, _, err = client.Issues.RemoveAssignees(ctx, owner, repo, noIssue, funk.UniqString(assignees))
 
 	return err
 }
