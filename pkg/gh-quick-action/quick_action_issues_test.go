@@ -15,29 +15,29 @@ import (
 	"github.com/google/uuid"
 )
 
-type IssueQuickActionsSuite struct {
+type IssueCommentQuickActionsSuite struct {
 	suite.Suite
-	*IssueQuickActions
+	*IssueCommentQuickActions
 
 	simpleHdl  *MockGithubQuickActionHandler
 	complexHdl *MockGithubQuickActionHandler
 }
 
-func (suite *IssueQuickActionsSuite) SetupTest() {
+func (suite *IssueCommentQuickActionsSuite) SetupTest() {
 	suite.simpleHdl = &MockGithubQuickActionHandler{}
 	suite.complexHdl = &MockGithubQuickActionHandler{}
 
-	suite.IssueQuickActions = NewIssueQuickActions(nil)
-	suite.IssueQuickActions.AddQuickAction("simple", suite.simpleHdl.Fnc)
-	suite.IssueQuickActions.AddQuickAction("complex", suite.complexHdl.Fnc)
+	suite.IssueCommentQuickActions = NewIssueCommentQuickActions(nil)
+	suite.IssueCommentQuickActions.AddQuickAction("simple", suite.simpleHdl.Fnc)
+	suite.IssueCommentQuickActions.AddQuickAction("complex", suite.complexHdl.Fnc)
 }
 
 // event ignored on event other than `created`
-func (suite *IssueQuickActionsSuite) TestInvalidEvent() {
+func (suite *IssueCommentQuickActionsSuite) TestInvalidEvent() {
 	event := &github.RepositoryEvent{Action: github.String(gofakeit.RandString([]string{"modified", "deleted"}))}
 	payload, _ := json.Marshal(event)
 
-	err := suite.IssueQuickActions.Handle(
+	err := suite.IssueCommentQuickActions.Handle(
 		context.Background(),
 		"commented",
 		uuid.NewString(),
@@ -50,14 +50,14 @@ func (suite *IssueQuickActionsSuite) TestInvalidEvent() {
 }
 
 // comment line are ignored if not starting with '/' or if an unknown action
-func (suite *IssueQuickActionsSuite) TestInvalidLinesEvent() {
+func (suite *IssueCommentQuickActionsSuite) TestInvalidLinesEvent() {
 	event := &github.IssueCommentEvent{
 		Action:  github.String(gofakeit.RandString([]string{"created", "modified", "deleted"})),
 		Comment: &github.IssueComment{Body: github.String("not an action\n/unknown action\n/")},
 	}
 	payload, _ := json.Marshal(event)
 
-	err := suite.IssueQuickActions.Handle(
+	err := suite.IssueCommentQuickActions.Handle(
 		context.Background(),
 		"commented",
 		uuid.NewString(),
@@ -69,7 +69,7 @@ func (suite *IssueQuickActionsSuite) TestInvalidLinesEvent() {
 	suite.Assert().NoError(err)
 }
 
-func (suite *IssueQuickActionsSuite) TestSimpleActionEvent() {
+func (suite *IssueCommentQuickActionsSuite) TestSimpleActionEvent() {
 	event := &github.IssueCommentEvent{
 		Action:  github.String("created"),
 		Comment: &github.IssueComment{Body: github.String(`/simple`)},
@@ -80,7 +80,7 @@ func (suite *IssueQuickActionsSuite) TestSimpleActionEvent() {
 		On("Fnc", mock.Anything, []string{}).
 		Return(nil)
 
-	err := suite.IssueQuickActions.Handle(
+	err := suite.IssueCommentQuickActions.Handle(
 		context.Background(),
 		"commented",
 		uuid.NewString(),
@@ -93,7 +93,7 @@ func (suite *IssueQuickActionsSuite) TestSimpleActionEvent() {
 	suite.Assert().NoError(err)
 }
 
-func (suite *IssueQuickActionsSuite) TestSimpleActionWithArgsEvent() {
+func (suite *IssueCommentQuickActionsSuite) TestSimpleActionWithArgsEvent() {
 	event := &github.IssueCommentEvent{
 		Action: github.String("created"),
 		Comment: &github.IssueComment{Body: github.String(`/simple arg1 		arg2   arg3`)},
@@ -104,7 +104,7 @@ func (suite *IssueQuickActionsSuite) TestSimpleActionWithArgsEvent() {
 		On("Fnc", mock.Anything, []string{"arg1", "arg2", "arg3"}).
 		Return(nil)
 
-	err := suite.IssueQuickActions.Handle(
+	err := suite.IssueCommentQuickActions.Handle(
 		context.Background(),
 		"commented",
 		uuid.NewString(),
@@ -117,7 +117,7 @@ func (suite *IssueQuickActionsSuite) TestSimpleActionWithArgsEvent() {
 	suite.Assert().NoError(err)
 }
 
-func (suite *IssueQuickActionsSuite) TestSimpleActionError() {
+func (suite *IssueCommentQuickActionsSuite) TestSimpleActionError() {
 	event := &github.IssueCommentEvent{
 		Action:  github.String("created"),
 		Comment: &github.IssueComment{Body: github.String(`/simple`)},
@@ -129,7 +129,7 @@ func (suite *IssueQuickActionsSuite) TestSimpleActionError() {
 		On("Fnc", mock.Anything, []string{}).
 		Return(actionErr)
 
-	err := suite.IssueQuickActions.Handle(
+	err := suite.IssueCommentQuickActions.Handle(
 		context.Background(),
 		"commented",
 		uuid.NewString(),
@@ -147,7 +147,7 @@ func (suite *IssueQuickActionsSuite) TestSimpleActionError() {
 	})
 }
 
-func (suite *IssueQuickActionsSuite) TestMultiActionsEvent() {
+func (suite *IssueCommentQuickActionsSuite) TestMultiActionsEvent() {
 	event := &github.IssueCommentEvent{
 		Action:  github.String("created"),
 		Comment: &github.IssueComment{Body: github.String("/simple a b c\n/simple\n/complex\n/complex /simple\n\n/simple not complex")},
@@ -171,7 +171,7 @@ func (suite *IssueQuickActionsSuite) TestMultiActionsEvent() {
 		On("Fnc", mock.Anything, []string{"/simple"}).
 		Return(fmt.Errorf("don't do that, please"))
 
-	err := suite.IssueQuickActions.Handle(
+	err := suite.IssueCommentQuickActions.Handle(
 		context.Background(),
 		"commented",
 		uuid.NewString(),
@@ -193,4 +193,4 @@ func (suite *IssueQuickActionsSuite) TestMultiActionsEvent() {
 }
 
 // TestIssueQuickActions starts the testing suite
-func TestIssueQuickActions(t *testing.T) { suite.Run(t, new(IssueQuickActionsSuite)) }
+func TestIssueQuickActions(t *testing.T) { suite.Run(t, new(IssueCommentQuickActionsSuite)) }

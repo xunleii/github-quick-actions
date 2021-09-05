@@ -16,12 +16,10 @@ type GithubQuickActions interface {
 
 // GithubQuickActionEvent contains all information and arguments from a quick action event.
 type GithubQuickActionEvent interface {
-	// inherit of ClientCreator methods
+	// ClientCreator inherits ClientCreator methods
 	githubapp.ClientCreator
-	// force github.*Event structure
-	githubapp.InstallationSource
 
-	// Args list of action arguments
+	// Arguments lists all action's arguments
 	Arguments() []string
 }
 

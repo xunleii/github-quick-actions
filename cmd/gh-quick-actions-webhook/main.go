@@ -43,7 +43,7 @@ func main() {
 	}
 
 	logger.Info().Msgf("prepare issues/pull_requests quick actions handlers")
-	issueQuickActions := quick_action.NewIssueQuickActions(cc)
+	issueQuickActions := quick_action.NewIssueCommentQuickActions(cc)
 	issueQuickActions.AddQuickAction("assign", quick_actions.Assign)
 	issueQuickActions.AddQuickAction("unassign", quick_actions.Unassign)
 

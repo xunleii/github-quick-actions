@@ -12,26 +12,26 @@ import (
 	"github.com/rs/zerolog"
 )
 
-// IssueQuickActions implements quick actions handling issues and pull requests comments.
-type IssueQuickActions struct {
+// IssueCommentQuickActions implements quick actions handling issues and pull requests comments.
+type IssueCommentQuickActions struct {
 	githubapp.ClientCreator
 
 	handlers map[string]GithubQuickActionHandler
 }
 
-// NewIssueQuickActions creates a new quick action manager handling issues and pull requests comments.
-func NewIssueQuickActions(cc githubapp.ClientCreator) *IssueQuickActions {
-	return &IssueQuickActions{
+// NewIssueCommentQuickActions creates a new quick action manager handling issues and pull requests comments.
+func NewIssueCommentQuickActions(cc githubapp.ClientCreator) *IssueCommentQuickActions {
+	return &IssueCommentQuickActions{
 		ClientCreator: cc,
 		handlers:      map[string]GithubQuickActionHandler{},
 	}
 }
-func (issue IssueQuickActions) Handles() []string { return []string{"issue_comment"} }
-func (issue IssueQuickActions) AddQuickAction(command string, handler GithubQuickActionHandler) {
+func (issue IssueCommentQuickActions) Handles() []string { return []string{"issue_comment"} }
+func (issue IssueCommentQuickActions) AddQuickAction(command string, handler GithubQuickActionHandler) {
 	issue.handlers[command] = handler
 }
 
-func (issue IssueQuickActions) Handle(ctx context.Context, eventType, deliveryID string, payload []byte) error {
+func (issue IssueCommentQuickActions) Handle(ctx context.Context, eventType, deliveryID string, payload []byte) error {
 	var event github.IssueCommentEvent
 	if err := json.Unmarshal(payload, &event); err != nil {
 		return errors.Wrap(err, "failed to parse issue comment event payload")
@@ -107,7 +107,7 @@ func (issue IssueQuickActions) Handle(ctx context.Context, eventType, deliveryID
 
 		logger.Debug().Msgf("handle action '%s'", name)
 		errsGroup.Go(func() error {
-			err := issue.handlers[name](ctx, &IssueQuickActionEvent{issue.ClientCreator, event, args})
+			err := issue.handlers[name](ctx, &IssueCommentEvent{issue.ClientCreator, &event, args})
 			if err != nil {
 				logger.Err(err).Msgf("failed to run '%s': %s", name, err)
 			}
@@ -118,13 +118,13 @@ func (issue IssueQuickActions) Handle(ctx context.Context, eventType, deliveryID
 	return errsGroup.Wait().ErrorOrNil()
 }
 
-// IssueQuickActionEvent implements GithubQuickActionEvent interface
-// for issue/pull_request events.
-type IssueQuickActionEvent struct {
+// IssueCommentEvent implements GithubQuickActionEvent interface for
+// issue/pull_request events.
+type IssueCommentEvent struct {
 	githubapp.ClientCreator
-	github.IssueCommentEvent
+	*github.IssueCommentEvent
 
-	args []string
+	Args []string
 }
 
-func (event IssueQuickActionEvent) Arguments() []string { return event.args }
+func (event IssueCommentEvent) Arguments() []string { return event.Args }

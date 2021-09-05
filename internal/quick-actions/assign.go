@@ -15,7 +15,7 @@ func Assign(ctx context.Context, event GithubQuickActionEvent) error {
 		Str("quick_action", "assign").
 		Logger()
 
-	issueEvent, valid := event.(*IssueQuickActionEvent)
+	issueEvent, valid := event.(*IssueCommentEvent)
 	if !valid {
 		return fmt.Errorf("invalid event type; only accept %T but get %T", issueEvent, event)
 	}
