@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"testing"
 
 	"github.com/brianvoe/gofakeit"
@@ -187,8 +188,10 @@ func (suite *IssueCommentQuickActionsSuite) TestMultiActionsEvent() {
 	suite.Assert().IsType(&multierror.Error{}, err)
 	suite.Assert().NotPanics(func() {
 		suite.Assert().Len(err.(*multierror.Error).WrappedErrors(), 2)
-		suite.Assert().EqualError(err.(*multierror.Error).WrappedErrors()[0], "yep, not complex at all")
-		suite.Assert().EqualError(err.(*multierror.Error).WrappedErrors()[1], "don't do that, please")
+		sort.Sort(err.(*multierror.Error))
+
+		suite.Assert().EqualError(err.(*multierror.Error).WrappedErrors()[0], "don't do that, please")
+		suite.Assert().EqualError(err.(*multierror.Error).WrappedErrors()[1], "yep, not complex at all")
 	})
 }
 
