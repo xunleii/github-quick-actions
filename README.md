@@ -1,6 +1,12 @@
 # Github quick actions
+[![Go](https://github.com/xunleii/github-quick-actions/actions/workflows/golang.yaml/badge.svg)](https://github.com/xunleii/github-quick-actions/actions/workflows/golang.yaml)
+[![GoReportCard example](https://goreportcard.com/badge/github.com/nanomsg/mangos)](https://goreportcard.com/report/github.com/xunleii/github-quick-actions)
+[![CodeFactor](https://www.codefactor.io/repository/github/xunleii/github-quick-actions/badge/main)](https://www.codefactor.io/repository/github/xunleii/github-quick-actions/overview/main)
+[![codecov](https://codecov.io/gh/xunleii/github-quick-actions/branch/main/graph/badge.svg?token=N69O0F7FGJ)](https://codecov.io/gh/xunleii/github-quick-actions)
+[![GitHub license](https://img.shields.io/github/license/xunleii/github-quick-actions.svg)](https://github.com/xunleii/github-quick-actions/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/xunleii/github-quick-actions.svg)](https://GitHub.com/xunleii/github-quick-actions/releases/)
 
-This workflow allows everyone to use [GitLab quick actions](https://docs.gitlab.com/ee/user/project/quick_actions.html) 
+This workflow allows everyone to use [Gitlab quick actions](https://docs.gitlab.com/ee/user/project/quick_actions.html) 
 on their repository.
 
 > NOTE: this documentation is mainly based on the Gitlab one, available 
@@ -35,16 +41,10 @@ Parameters are case-sensitive.
 The following quick actions are applicable to descriptions, discussions, and
 threads.
 
-| Command     | Issue            | Pull request     | Action                                   |
-|:-----------:|:----------------:|:----------------:|:----------------------------------------:|
-| `/approve`  | **&#9676;** No   | **&#10003;** Yes | Approve the merge request or the review. |
-| `/assign @user`                                                                                  | **&#10003;** Yes | **&#10003;** Yes | Assign one user.                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `/assign @user1 @user2`                                                                          | **&#10003;** Yes | **&#10003;** Yes | Assign multiple users.                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `/assign me`                                                                                     | **&#10003;** Yes | **&#10003;** Yes | Assign yourself.                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `/close`    | **&#10003;** Yes | **&#10003;** Yes | Close.                                   |
-| `/draft`    | **&#9676;** No   | **&#10003;** Yes | Toggle the draft status.                 |
-| `/reopen`   | **&#10003;** Yes | **&#10003;** Yes | Reopen.                                  |
-| `/unassign` | **&#9676;** No   | **&#10003;** Yes | Remove all assignees.                    |
+|     Command     |        Issue        | Pull request |      Action     |
+| :-------------: | :-----------------  | :----------  | :-------------: |
+| `/assign @user [@user...]` | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | Assign one/several users<br>_(use `me` to assign yourself)_ |
+| `/unassign @user [@user...]` | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | Remove one/several assignees<br>_(use `me` to remove yourself)_ |
 
 ## Quick actions to be developed
 
@@ -52,6 +52,10 @@ The following quick actions will be available in the future (must need times to 
 
 | Command                                                                                          | Issue            | Pull request     | Action                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 |:-------------------------------------------------------------------------------------------------|:-----------------|:-----------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/approve`  | **&#9676;** No   | **&#10003;** Yes | Approve the merge request or the review. |
+| `/close`    | **&#10003;** Yes | **&#10003;** Yes | Close.                                   |
+| `/draft`    | **&#9676;** No   | **&#10003;** Yes | Toggle the draft status.                 |
+| `/reopen`   | **&#10003;** Yes | **&#10003;** Yes | Reopen.                                  |
 | `/assign_reviewer @user` or `/reviewer @user` or `/request_review @user`                         | **&#9676;** No   | **&#10003;** Yes | Assign one user as a reviewer.                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `/assign_reviewer @user1 @user2` or `/reviewer @user1 @user2` or `/request_review @user1 @user2` | **&#9676;** No   | **&#10003;** Yes | Assign multiple users as reviewers.                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `/assign_reviewer me` or `/reviewer me` or `/request_review me`                                  | **&#9676;** No   | **&#10003;** Yes | Assign yourself as a reviewer.                                                                                                                                                                                                                                                                                                                                                                                                                            |
