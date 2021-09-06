@@ -5,26 +5,33 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/go-github/v38/github"
+	"github.com/palantir/go-githubapp/githubapp"
 	"github.com/rs/zerolog"
 	"github.com/thoas/go-funk"
 
-	. "xnku.be/github-quick-actions/pkg/gh-quick-action"
+	"xnku.be/github-quick-actions/pkg/gh-quick-action"
 )
 
-func Unassign(ctx context.Context, event GithubQuickActionEvent) error {
+var UnassignIssueComment = quick_action.GithubQuickAction{
+	OnEvent: quick_action.GithubIssueCommentEvent,
+	Handler: Unassign,
+}
+
+func Unassign(ctx context.Context, cc githubapp.ClientCreator, event quick_action.GithubQuickActionEvent) error {
 	logger := zerolog.Ctx(ctx).With().
 		Str("quick_action", "unassign").
 		Logger()
 
-	issueEvent, valid := event.(*IssueCommentEvent)
+	issueEvent, valid := event.Payload.(*github.IssueCommentEvent)
 	if !valid {
 		return fmt.Errorf("invalid event type; only accept %T but get %T", issueEvent, event)
 	}
 
-	logger.Debug().Msgf("handle `/unassign` (args: %v)", issueEvent.Arguments())
+	logger.Debug().Msgf("handle `/unassign` (args: %v)", event.Arguments)
 
 	var assignees []string
-	for _, assignee := range issueEvent.Arguments() {
+	for _, assignee := range event.Arguments {
 		switch {
 		case assignee == "@" || assignee == "":
 			// ignore empty assignees
@@ -40,9 +47,8 @@ func Unassign(ctx context.Context, event GithubQuickActionEvent) error {
 		return nil
 	}
 
-	client, err := issueEvent.NewInstallationClient(issueEvent.GetInstallation().GetID())
+	client, err := cc.NewInstallationClient(issueEvent.GetInstallation().GetID())
 	if err != nil {
-		zerolog.Ctx(ctx).Error().Err(err).Send()
 		return err
 	}
 

@@ -5,26 +5,33 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/go-github/v38/github"
+	"github.com/palantir/go-githubapp/githubapp"
 	"github.com/rs/zerolog"
 	"github.com/thoas/go-funk"
 
-	. "xnku.be/github-quick-actions/pkg/gh-quick-action"
+	"xnku.be/github-quick-actions/pkg/gh-quick-action"
 )
 
-func Assign(ctx context.Context, event GithubQuickActionEvent) error {
+var AssignIssueComment = quick_action.GithubQuickAction{
+	OnEvent: quick_action.GithubIssueCommentEvent,
+	Handler: Assign,
+}
+
+func Assign(ctx context.Context, cc githubapp.ClientCreator, event quick_action.GithubQuickActionEvent) error {
 	logger := zerolog.Ctx(ctx).With().
 		Str("quick_action", "assign").
 		Logger()
 
-	issueEvent, valid := event.(*IssueCommentEvent)
+	issueEvent, valid := event.Payload.(*github.IssueCommentEvent)
 	if !valid {
 		return fmt.Errorf("invalid event type; only accept %T but get %T", issueEvent, event)
 	}
 
-	logger.Debug().Msgf("handle `/assign` (args: %v)", issueEvent.Arguments())
+	logger.Debug().Msgf("handle `/assign` (args: %v)", event.Arguments)
 
 	var assignees []string
-	for _, assignee := range issueEvent.Arguments() {
+	for _, assignee := range event.Arguments {
 		switch {
 		case assignee == "@" || assignee == "":
 			// ignore empty assignees
@@ -40,7 +47,7 @@ func Assign(ctx context.Context, event GithubQuickActionEvent) error {
 		return nil
 	}
 
-	client, err := issueEvent.NewInstallationClient(issueEvent.GetInstallation().GetID())
+	client, err := cc.NewInstallationClient(issueEvent.GetInstallation().GetID())
 	if err != nil {
 		return err
 	}

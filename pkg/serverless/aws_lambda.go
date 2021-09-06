@@ -58,9 +58,9 @@ func init() {
 	}
 
 	logger.Info().Msgf("prepare issues/pull_requests quick actions handlers")
-	issueQuickActions := quick_action.NewIssueCommentQuickActions(cc)
-	issueQuickActions.AddQuickAction("assign", quick_actions.Assign)
-	issueQuickActions.AddQuickAction("unassign", quick_actions.Unassign)
+	issueQuickActions := quick_action.NewGithubQuickActions(cc)
+	issueQuickActions.AddQuickAction("assign", quick_actions.AssignIssueComment)
+	issueQuickActions.AddQuickAction("unassign", quick_actions.UnassignIssueComment)
 
 	logger.Info().Msgf("prepare application event dispatcher")
 	app := githubapp.NewEventDispatcher(
@@ -80,7 +80,6 @@ func init() {
 
 	muxLambda = gorillamux.New(r)
 }
-
 
 func AWSLambdaHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	zerolog.Ctx(ctx).Trace().Interface("event", event).Send()
