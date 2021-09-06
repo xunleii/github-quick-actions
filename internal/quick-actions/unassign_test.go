@@ -15,7 +15,7 @@ import (
 
 var UnassignIssueCommentFixtures = fixtures.EventFixtures{
 	QuickActionName: "unassign",
-	EventType:       fixtures.IssueCommentEventType,
+	EventGenerator:  fixtures.IssueCommentEventType,
 
 	Fixtures: []fixtures.EventFixture{
 		{

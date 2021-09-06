@@ -43,9 +43,9 @@ func main() {
 	}
 
 	logger.Info().Msgf("prepare issues/pull_requests quick actions handlers")
-	issueQuickActions := quick_action.NewIssueCommentQuickActions(cc)
-	issueQuickActions.AddQuickAction("assign", quick_actions.Assign)
-	issueQuickActions.AddQuickAction("unassign", quick_actions.Unassign)
+	issueQuickActions := quick_action.NewGithubQuickActions(cc)
+	issueQuickActions.AddQuickAction("assign", quick_actions.AssignIssueComment)
+	issueQuickActions.AddQuickAction("unassign", quick_actions.UnassignIssueComment)
 
 	app := githubapp.NewEventDispatcher(
 		[]githubapp.EventHandler{issueQuickActions},

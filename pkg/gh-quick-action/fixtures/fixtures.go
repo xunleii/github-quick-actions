@@ -22,15 +22,15 @@ type (
 	EventFixtures struct {
 		QuickActionName string
 
-		// EventType defines which type of event should be generated
-		EventType
+		// EventGenerator defines which type of event should be generated
+		EventGenerator
 
 		// Quick action test cases
 		Fixtures []EventFixture
 	}
 
-	// EventType generates the correct GithubQuickActionEvent using the given fixture
-	EventType func(cc *MockClientCreator, fixture EventFixture) quick_action.GithubQuickActionEvent
+	// EventGenerator generates the correct GithubQuickActionEvent using the given fixture
+	EventGenerator func(cc *MockClientCreator, fixture EventFixture) quick_action.GithubQuickActionEvent
 
 	// EventFixture defines a single test case for a specific event
 	EventFixture struct {
@@ -71,7 +71,8 @@ func (fixtures EventFixtures) RunForQuickAction(t *testing.T, handler quick_acti
 
 			err := handler(
 				context.TODO(),
-				fixtures.EventType(cc, fixture),
+				cc,
+				fixtures.EventGenerator(cc, fixture),
 			)
 
 			if len(fixture.APICalls) > 0 {
