@@ -16,7 +16,7 @@ import (
 
 var AssignIssueCommentFixtures = fixtures.EventFixtures{
 	QuickActionName: "assign",
-	EventType:       fixtures.IssueCommentEventType,
+	EventGenerator:  fixtures.IssueCommentEventType,
 
 	Fixtures: []fixtures.EventFixture{
 		{

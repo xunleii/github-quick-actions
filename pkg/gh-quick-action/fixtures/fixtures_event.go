@@ -14,14 +14,13 @@ const (
 
 var (
 	// IssueCommentEventType manages handler using IssueComment events
-	IssueCommentEventType EventType = func(cc *MockClientCreator, fixture EventFixture) quick_action.GithubQuickActionEvent {
+	IssueCommentEventType EventGenerator = func(cc *MockClientCreator, fixture EventFixture) quick_action.GithubQuickActionEvent {
 		var issueCommentEvent github.IssueCommentEvent
 		_ = json.Unmarshal([]byte(issueCommentEventJSON), &issueCommentEvent)
 
-		return &quick_action.IssueCommentEvent{
-			ClientCreator:     cc,
-			IssueCommentEvent: &issueCommentEvent,
-			Args:              fixture.Arguments,
+		return quick_action.GithubQuickActionEvent{
+			Payload:   &issueCommentEvent,
+			Arguments: fixture.Arguments,
 		}
 	}
 )
