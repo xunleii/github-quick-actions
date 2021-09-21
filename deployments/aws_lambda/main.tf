@@ -4,7 +4,7 @@ locals {
 
   gateway_logformat_default = "{\"http_method\":\"$context.httpMethod\",\"path\":\"$context.path\",\"request_id\":\"$context.requestId\",\"lambda\":{\"status\":$context.integration.status,\"error\":\"$context.integration.error\"},\"response\":{\"status\":$context.status}}"
   gateway_logformat_verbose = "{\"time\":\"$context.requestTime\",\"protocol\":\"$context.protocol\",\"http_method\":\"$context.httpMethod\",\"gateway_api\":{\"id\":\"$context.apiId\",\"domain\":\"$context.domainName\",\"stage\":\"$context.stage\"},\"path\":\"$context.path\",\"request_id\":\"$context.requestId\",\"source_ip\":\"$context.identity.sourceIp\",\"user-agent\":\"$context.identity.userAgent\",\"lambda\":{\"lambda_status\":$context.integration.integrationStatus,\"status\":$context.integration.status,\"error\":\"$context.integration.error\",\"latency\":$context.integration.latency},\"response\":{\"status\":$context.status,\"latency\":$context.responseLatency,\"length\":$context.responseLength}}"
-  gateway_logformat = var.enable_tracing ? local.gateway_logformat_verbose : local.gateway_logformat_default
+  gateway_logformat         = var.enable_tracing ? local.gateway_logformat_verbose : local.gateway_logformat_default
 }
 
 // Publish API Gateway as application ingress
@@ -50,8 +50,8 @@ module "app_lambda" {
   handler       = basename(var.app_binary_path)
   runtime       = "go1.x"
 
-  create_package = false
-  publish        = true
+  create_package         = false
+  publish                = true
   local_existing_package = local.app_archive
 
   environment_variables = {
