@@ -1,0 +1,24 @@
+name: Security hardening (CodeQL)
+
+on:
+  pull_request:
+    types: [ opened, synchronize ]
+  push:
+    branches: [ master ]
+
+jobs:
+  code_ql:
+    name: CodeQL analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f #v2.3.4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@4854dd23d5f2aada3f026670784d5109e7702ea9 #v1.0.14
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@4854dd23d5f2aada3f026670784d5109e7702ea9 #v1.0.14
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@4854dd23d5f2aada3f026670784d5109e7702ea9 #v1.0.14

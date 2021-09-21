@@ -1,15 +1,15 @@
 # Github quick actions
 [![Go](https://github.com/xunleii/github-quick-actions/actions/workflows/golang.yaml/badge.svg)](https://github.com/xunleii/github-quick-actions/actions/workflows/golang.yaml)
-[![GoReportCard example](https://goreportcard.com/badge/github.com/nanomsg/mangos)](https://goreportcard.com/report/github.com/xunleii/github-quick-actions)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/xunleii/github-quick-actions.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/xunleii/github-quick-actions/alerts/)[![GoReportCard example](https://goreportcard.com/badge/github.com/nanomsg/mangos)](https://goreportcard.com/report/github.com/xunleii/github-quick-actions)
 [![CodeFactor](https://www.codefactor.io/repository/github/xunleii/github-quick-actions/badge/main)](https://www.codefactor.io/repository/github/xunleii/github-quick-actions/overview/main)
 [![codecov](https://codecov.io/gh/xunleii/github-quick-actions/branch/main/graph/badge.svg?token=N69O0F7FGJ)](https://codecov.io/gh/xunleii/github-quick-actions)
 [![GitHub license](https://img.shields.io/github/license/xunleii/github-quick-actions.svg)](https://github.com/xunleii/github-quick-actions/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/xunleii/github-quick-actions.svg)](https://GitHub.com/xunleii/github-quick-actions/releases/)
 
-This workflow allows everyone to use [Gitlab quick actions](https://docs.gitlab.com/ee/user/project/quick_actions.html) 
+This workflow allows everyone to use [Gitlab quick actions](https://docs.gitlab.com/ee/user/project/quick_actions.html)
 on their repository.
 
-> NOTE: this documentation is mainly based on the Gitlab one, available 
+> NOTE: this documentation is mainly based on the Gitlab one, available
 > on [Gitlab](https://gitlab.com/gitlab-org/gitlab/blob/master/doc/user/project/quick_actions.md)
 
 ## What are _quick actions_
