@@ -1,7 +1,6 @@
 locals {
   app_name    = "github-quick-action"
   app_archive = "${var.app_binary_path}.zip"
-  app_key     = "${var.app_version}/${basename(var.app_binary_path)}.zip"
 
   gateway_logformat_default = "{\"http_method\":\"$context.httpMethod\",\"path\":\"$context.path\",\"request_id\":\"$context.requestId\",\"lambda\":{\"status\":$context.integration.status,\"error\":\"$context.integration.error\"},\"response\":{\"status\":$context.status}}"
   gateway_logformat_verbose = "{\"time\":\"$context.requestTime\",\"protocol\":\"$context.protocol\",\"http_method\":\"$context.httpMethod\",\"gateway_api\":{\"id\":\"$context.apiId\",\"domain\":\"$context.domainName\",\"stage\":\"$context.stage\"},\"path\":\"$context.path\",\"request_id\":\"$context.requestId\",\"source_ip\":\"$context.identity.sourceIp\",\"user-agent\":\"$context.identity.userAgent\",\"lambda\":{\"lambda_status\":$context.integration.integrationStatus,\"status\":$context.integration.status,\"error\":\"$context.integration.error\",\"latency\":$context.integration.latency},\"response\":{\"status\":$context.status,\"latency\":$context.responseLatency,\"length\":$context.responseLength}}"
@@ -51,12 +50,9 @@ module "app_lambda" {
   handler       = basename(var.app_binary_path)
   runtime       = "go1.x"
 
-  publish        = true
   create_package = false
-  s3_existing_package = {
-    bucket = aws_s3_bucket.app_binary.id
-    key    = aws_s3_bucket_object.app_binary.id
-  }
+  publish        = true
+  local_existing_package = local.app_archive
 
   environment_variables = {
     "GQA_GITHUB_APP_ID"         = var.github_app_id
@@ -91,39 +87,8 @@ module "app_lambda" {
   create_layer = false
 }
 
-// Send archived binary to AWS S3 buckets (not managed by `terraform-aws-modules/lambda/aws` in order to keep flexibility)
 data "archive_file" "app_archive" {
   type        = "zip"
   source_file = var.app_binary_path
   output_path = local.app_archive
-}
-
-resource "aws_s3_bucket" "app_binary" {
-  bucket_prefix = "${local.app_name}.package."
-  acl           = "private"
-  # NOTE: don't care about this bucket, only used to store application binary
-  force_destroy = true
-
-  versioning {
-    enabled = true
-  }
-  lifecycle_rule {
-    enabled = true
-    noncurrent_version_expiration {
-      days = 15
-    }
-  }
-}
-
-resource "aws_s3_bucket_object" "app_binary" {
-  bucket        = aws_s3_bucket.app_binary.bucket
-  key           = local.app_key
-  storage_class = "ONEZONE_IA"
-
-  source = data.archive_file.app_archive.output_path
-  etag   = filemd5(data.archive_file.app_archive.output_path)
-
-  tags = {
-    "version.x-amz.com" : var.app_version
-  }
 }
