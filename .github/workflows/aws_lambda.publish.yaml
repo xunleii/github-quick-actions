@@ -44,9 +44,13 @@ jobs:
       - run: terraform init -backend-config=backend.json
         working-directory: deployments/aws_lambda
       - name: Publish new release
-        run: |
-          terraform apply -auto-approve \
-            -var app_binary_path=github-quick-actions -var app_version=${GITHUB_REF##*/} \
-            -var github_app_id=${{ secrets.GH_APP_ID }} -var github_b64pkey=${{ secrets.GH_B64PKEY }} -var github_webhook_secret=${{ secrets.GH_WEBHOOK_SECRET }} \
-            -var enable_tracing=false -var app_log_level=info
+        run: terraform apply -var app_version="${GITHUB_REF##*/}" -auto-approve
+        env:
+          TF_VAR_app_binary_path: github-quick-actions
+          TF_VAR_app_log_level: info
+          TF_VAR_enable_tracing: 'false'
+
+          TF_VAR_github_app_id: ${{ secrets.GH_APP_ID }}
+          TF_VAR_github_b64pkey: ${{ secrets.GH_B64PKEY }}
+          TF_VAR_github_webhook_secret: ${{ secrets.GH_WEBHOOK_SECRET }}
         working-directory: deployments/aws_lambda
