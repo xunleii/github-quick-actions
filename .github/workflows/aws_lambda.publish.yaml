@@ -46,7 +46,7 @@ jobs:
       - name: Publish new release
         run: terraform apply -var app_version="${GITHUB_REF##*/}" -auto-approve
         env:
-          TF_VAR_app_binary_path: github-quick-actions
+          TF_VAR_app_binary_path: ${{ github.workspace }}/github-quick-actions
           TF_VAR_app_log_level: info
           TF_VAR_enable_tracing: 'false'
 
