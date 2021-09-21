@@ -3,7 +3,7 @@ name: Security hardening (CodeQL)
 on:
   pull_request:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   code_ql:

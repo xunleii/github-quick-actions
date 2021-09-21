@@ -1,6 +1,7 @@
 # Github quick actions
-[![Go](https://github.com/xunleii/github-quick-actions/actions/workflows/golang.yaml/badge.svg)](https://github.com/xunleii/github-quick-actions/actions/workflows/golang.yaml)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/xunleii/github-quick-actions.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/xunleii/github-quick-actions/alerts/)[![GoReportCard example](https://goreportcard.com/badge/github.com/nanomsg/mangos)](https://goreportcard.com/report/github.com/xunleii/github-quick-actions)
+![GitHub deployments](https://img.shields.io/github/deployments/xunleii/github-quick-actions/AWS%20Lambda?label=Published%20on%20AWS%20Lambda)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/xunleii/github-quick-actions.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/xunleii/github-quick-actions/alerts/)
+[![GoReportCard example](https://goreportcard.com/badge/github.com/nanomsg/mangos)](https://goreportcard.com/report/github.com/xunleii/github-quick-actions)
 [![CodeFactor](https://www.codefactor.io/repository/github/xunleii/github-quick-actions/badge/main)](https://www.codefactor.io/repository/github/xunleii/github-quick-actions/overview/main)
 [![codecov](https://codecov.io/gh/xunleii/github-quick-actions/branch/main/graph/badge.svg?token=N69O0F7FGJ)](https://codecov.io/gh/xunleii/github-quick-actions)
 [![GitHub license](https://img.shields.io/github/license/xunleii/github-quick-actions.svg)](https://github.com/xunleii/github-quick-actions/blob/master/LICENSE)

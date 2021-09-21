@@ -2,11 +2,11 @@ name: Security hardening (Github Actions workflows)
 
 on:
   pull_request:
-    types: [ opened, synchronize ]
-    paths: [ '.github/workflows/**' ]
+    types: [opened, synchronize]
+    paths: [".github/workflows/**"]
   push:
-    branches: [ master ]
-    paths: [ '.github/workflows/**' ]
+    branches: [master]
+    paths: [".github/workflows/**"]
 
 jobs:
   ci_harden_security:

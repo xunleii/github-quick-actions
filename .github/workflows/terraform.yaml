@@ -2,7 +2,7 @@ name: Terraform
 
 on:
   pull_request:
-    paths: [ 'deployments/**.tf' ]
+    paths: ["deployments/**.tf"]
 
 jobs:
   lint:
