@@ -3,11 +3,10 @@ name: Go
 on:
   pull_request:
     paths: [ '**.go', 'go.mod', 'go.sum' ]
-  push:
-    branches: [ master ]
 
 jobs:
   lint:
+    name: Go lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f #v2.3.4
@@ -16,6 +15,7 @@ jobs:
           version: latest
 
   test:
+    name: Go test & coverage
     needs: [ lint ]
     runs-on: ubuntu-latest
     steps:
