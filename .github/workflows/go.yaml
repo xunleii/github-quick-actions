@@ -14,6 +14,27 @@ jobs:
         with:
           version: latest
 
+  build:
+    name: Go build
+    needs: [lint]
+    strategy:
+      matrix:
+        platform: [aws_lambda]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
+      - uses: actions/setup-go@331ce1d993939866bb63c32c6cbbfd48fa76fc57 # renovate: tag=v2.1.4
+        with:
+          go-version: 1.17.x
+      - name: Build github-quick-actions for ${{ matrix.platform }}
+        run: |
+          go build -tags ${{ matrix.platform }} -o github-quick-actions \
+            -ldflags '-X github.com/prometheus/common/version.Version='"${GITHUB_REF##*/}" \
+            -ldflags '-X github.com/prometheus/common/version.Revision=${{ github.sha }}' \
+            -ldflags '-X github.com/prometheus/common/version.Branch=${{ github.head_ref }}' \
+            -ldflags '-X github.com/prometheus/common/version.BuildUser=${{ github.actor }}@github.${{ github.run_id }}' \
+            -ldflags '-X github.com/prometheus/common/version.BuildDate='"$(date --iso-8601=seconds)"
+
   test:
     name: Go test & coverage
     needs: [lint]

@@ -2,6 +2,7 @@ name: Security hardening (CodeQL)
 
 on:
   pull_request:
+    types: [labeled]
   push:
     branches: [master]
 
@@ -9,10 +10,12 @@ jobs:
   code_ql:
     name: CodeQL analysis
     runs-on: ubuntu-latest
+    if: ${{ github.event.label.name == 'security:CodeQL' }}
     permissions:
-      security-events: write
       actions: read
       contents: read
+      issues: write
+      security-events: write
     steps:
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
       - name: Initialize CodeQL
@@ -21,3 +24,14 @@ jobs:
         uses: github/codeql-action/autobuild@4854dd23d5f2aada3f026670784d5109e7702ea9 # renovate: tag=v1.0.14
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@4854dd23d5f2aada3f026670784d5109e7702ea9 # renovate: tag=v1.0.14
+        continue-on-error: true
+      - name: Unlabel 'security:CodeQL'
+        uses: actions/github-script@f891eff65186019cbb3f7190c4590bc0a1b76fbc # renovate: tag=v4.1.0
+        with:
+          script: |
+            github.issues.deleteLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              name: 'security:CodeQL'
+            })
