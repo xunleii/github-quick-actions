@@ -3,7 +3,7 @@ package quick_action
 import (
 	"context"
 
-	"github.com/google/go-github/v38/github"
+	"github.com/google/go-github/v39/github"
 	"github.com/palantir/go-githubapp/githubapp"
 )
 
