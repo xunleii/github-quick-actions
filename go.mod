@@ -6,7 +6,7 @@ require (
 	github.com/alecthomas/kong v0.2.17
 	github.com/aws/aws-lambda-go v1.26.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.11.0
-	github.com/brianvoe/gofakeit v3.18.0+incompatible
+	github.com/brianvoe/gofakeit v3.20.4+incompatible
 	github.com/google/go-github/v38 v38.1.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
