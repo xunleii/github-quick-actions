@@ -22,7 +22,7 @@ func main() {
 	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
 
 	config := cmd.CLIConfig{}
-	kong.Parse(&config, kong.Vars{"version": version.Info()})
+	kong.Parse(&config, kong.Vars{"version": version.Version})
 
 	llvl, _ := zerolog.ParseLevel(config.LogLevel)
 	logger = logger.Level(llvl)

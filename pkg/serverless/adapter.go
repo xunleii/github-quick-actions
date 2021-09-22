@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/gregjones/httpcache"
 	"github.com/palantir/go-githubapp/githubapp"
+	"github.com/prometheus/common/version"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/pkgerrors"
 
@@ -21,7 +22,10 @@ import (
 )
 
 func init() {
-	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
+	logger := zerolog.New(os.Stderr).With().
+		Timestamp().
+		Str("version", version.Version).
+		Logger()
 	zerolog.DefaultContextLogger = &logger
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
@@ -64,8 +68,9 @@ func LoggerFromEnvironment() AdapterOption {
 		}
 
 		adapter.injectLogger(
-			zerolog.New(os.Stdout).
-				With().Timestamp().
+			zerolog.New(os.Stdout).With().
+				Timestamp().
+				Str("version", version.Version).
 				Logger().Level(level),
 		)
 	}
