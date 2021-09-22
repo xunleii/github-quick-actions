@@ -7,7 +7,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/brianvoe/gofakeit"
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/go-github/v38/github"
 	"github.com/hashicorp/go-multierror"
 	"github.com/stretchr/testify/mock"
@@ -75,7 +75,7 @@ func (suite *GithubQuickActionsSuite) TestUnknownEvent() {
 
 // event ignored on event other than `created`
 func (suite *GithubQuickActionsSuite) TestInvalidEvent() {
-	event := &github.RepositoryEvent{Action: github.String(gofakeit.RandString([]string{"modified", "deleted"}))}
+	event := &github.RepositoryEvent{Action: github.String(gofakeit.RandomString([]string{"modified", "deleted"}))}
 	payload, _ := json.Marshal(event)
 
 	err := suite.GithubQuickActions.Handle(
