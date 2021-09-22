@@ -34,7 +34,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f #v2.3.4
-      - uses: actions/download-artifact@3be87be14a055c47b01d3bd88f8fe02320a9bb60 #v2.0.10
+      - uses: actions/download-artifact@b1985abdea713aec19e3253477b5a6472456a2fa
         with:
           name: github-quick-actions
 
