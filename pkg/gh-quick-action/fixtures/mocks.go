@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/google/go-github/v38/github"
+	"github.com/google/go-github/v39/github"
 	"github.com/shurcooL/githubv4"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/oauth2"
