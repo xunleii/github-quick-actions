@@ -3,7 +3,7 @@ package quick_action
 import (
 	"encoding/json"
 
-	"github.com/google/go-github/v38/github"
+	"github.com/google/go-github/v39/github"
 )
 
 // GithubIssueCommentEvent defines Github issue comment event.

@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/google/go-github/v38/github"
+	"github.com/google/go-github/v39/github"
 	"github.com/palantir/go-githubapp/githubapp"
 	"github.com/rs/zerolog"
 	"github.com/thoas/go-funk"
-
-	"xnku.be/github-quick-actions/pkg/gh-quick-action"
+	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action"
 )
 
 var UnassignIssueComment = quick_action.GithubQuickAction{

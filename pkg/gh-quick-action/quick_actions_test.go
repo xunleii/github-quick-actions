@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/google/go-github/v38/github"
+	"github.com/google/go-github/v39/github"
 	"github.com/hashicorp/go-multierror"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
