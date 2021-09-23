@@ -9,6 +9,7 @@ import (
 	"github.com/palantir/go-githubapp/githubapp"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
+	"github.com/thoas/go-funk"
 )
 
 // GithubQuickActions manages all defined GitHub quick actions through
@@ -19,23 +20,23 @@ type GithubQuickActions struct {
 
 	// actions contains all defined Github quick actions.
 	actions map[string]map[string]GithubQuickActionHandler
-	// eventsDefinition contains all Github type definition handled by this instance.
-	eventsDefinition map[string]githubEventType
+	// eventWrappers contains all Github type definition handled by this instance.
+	eventWrappers map[string]githubEventType
 }
 
 // NewGithubQuickActions creates a new instance of GithubQuickActions.
 func NewGithubQuickActions(cc githubapp.ClientCreator) *GithubQuickActions {
 	return &GithubQuickActions{
-		ClientCreator:    cc,
-		actions:          map[string]map[string]GithubQuickActionHandler{},
-		eventsDefinition: map[string]githubEventType{},
+		ClientCreator: cc,
+		actions:       map[string]map[string]GithubQuickActionHandler{},
+		eventWrappers: map[string]githubEventType{},
 	}
 }
 
 // AddQuickAction adds or replaces quick actions for the given command.
 func (a GithubQuickActions) AddQuickAction(command string, handlers ...GithubQuickAction) {
 	for _, handler := range handlers {
-		a.eventsDefinition[handler.OnEvent.Name()] = handler.OnEvent
+		a.eventWrappers[handler.OnEvent.Name()] = handler.OnEvent
 
 		if a.actions[handler.OnEvent.Name()] == nil {
 			a.actions[handler.OnEvent.Name()] = map[string]GithubQuickActionHandler{}
@@ -47,20 +48,20 @@ func (a GithubQuickActions) AddQuickAction(command string, handlers ...GithubQui
 // Handles implements githubapp.Handles
 func (a GithubQuickActions) Handles() []string {
 	var handles []string
-	for k := range a.eventsDefinition {
+	for k := range a.eventWrappers {
 		handles = append(handles, k)
 	}
-	return handles
+	return funk.UniqString(handles)
 }
 
 // Handle implements githubapp.Handle
 func (a GithubQuickActions) Handle(ctx context.Context, eventType, deliveryID string, payload []byte) error {
-	definition, handled := a.eventsDefinition[eventType]
+	eventWrapper, handled := a.eventWrappers[eventType]
 	if !handled {
 		return fmt.Errorf("'%s' event not handled... rejected", eventType)
 	}
 
-	event, err := definition.Wraps(payload)
+	event, err := eventWrapper.Wraps(payload)
 	if err != nil {
 		return errors.Wrapf(err, "failed to parse '%s' event payload", eventType)
 	}
@@ -87,7 +88,7 @@ func (a GithubQuickActions) Handle(ctx context.Context, eventType, deliveryID st
 		RawJSON("payload", payload).
 		Msgf("new '%s' event handled", eventType)
 
-	handlers := a.actions[definition.Name()]
+	handlers := a.actions[eventWrapper.Name()]
 
 	var quickActions [][]string
 	for n, line := range strings.Split(event.GetBody(), "\n") {

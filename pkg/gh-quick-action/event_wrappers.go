@@ -12,13 +12,13 @@ var GithubIssueCommentEvent = genericEventDefinition{
 	wraps: func(payload []byte) (githubWrappedEvent, error) {
 		var event github.IssueCommentEvent
 		err := json.Unmarshal(payload, &event)
-		return &GithubWrappedIssueCommentEvent{event}, err
+		return &GithubWrappedIssueCommentEvent{&event}, err
 	},
 }
 
 // GithubWrappedIssueCommentEvent wraps github.IssueCommentEvent structure
 type GithubWrappedIssueCommentEvent struct {
-	github.IssueCommentEvent
+	*github.IssueCommentEvent
 }
 
 func (g GithubWrappedIssueCommentEvent) GetEventPayload() githubEventPayload {
@@ -28,19 +28,19 @@ func (g GithubWrappedIssueCommentEvent) GetBody() string {
 	return g.IssueCommentEvent.GetComment().GetBody()
 }
 
-// GithubIssuesEvent defines Github issue comment event.
+// GithubIssuesEvent defines Github issue event.
 var GithubIssuesEvent = genericEventDefinition{
 	name: "issues",
 	wraps: func(payload []byte) (githubWrappedEvent, error) {
 		var event github.IssuesEvent
 		err := json.Unmarshal(payload, &event)
-		return &GithubWrappedIssueEvent{event}, err
+		return &GithubWrappedIssueEvent{&event}, err
 	},
 }
 
 // GithubWrappedIssueEvent wraps github.IssuesEvent structure
 type GithubWrappedIssueEvent struct {
-	github.IssuesEvent
+	*github.IssuesEvent
 }
 
 func (g GithubWrappedIssueEvent) GetEventPayload() githubEventPayload {
