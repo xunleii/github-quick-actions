@@ -14,13 +14,14 @@ jobs:
         with:
           go-version: 1.17.x
       - name: Build new release of github-quick-actions
-        run: |
-          go build -tags aws_lambda -o github-quick-actions \
-            -ldflags '-X github.com/prometheus/common/version.Version='"${GITHUB_REF##*/}" \
-            -ldflags '-X github.com/prometheus/common/version.Revision=${{ github.sha }}' \
-            -ldflags '-X github.com/prometheus/common/version.Branch=main' \
-            -ldflags '-X github.com/prometheus/common/version.BuildUser=${{ github.actor }}@github.${{ github.run_id }}' \
-            -ldflags '-X github.com/prometheus/common/version.BuildDate='"$(date --iso-8601=seconds)"
+        run: >-
+          go build -tags aws_lambda -o github-quick-actions -ldflags "
+          -X github.com/prometheus/common/version.Version=${GITHUB_REF##*/}
+          -X github.com/prometheus/common/version.Revision=${{ github.sha }}
+          -X github.com/prometheus/common/version.Branch=${{ github.head_ref }}
+          -X github.com/prometheus/common/version.BuildUser=${{ github.actor }}@github.${{ github.run_id }}
+          -X github.com/prometheus/common/version.BuildDate=$(date --iso-8601=seconds)
+          "
       - name: Archive code coverage results
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074 # renovate: tag=v2.2.4
         with:
