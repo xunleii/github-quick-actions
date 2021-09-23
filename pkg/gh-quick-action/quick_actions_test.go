@@ -190,10 +190,16 @@ func (suite *GithubQuickActionsSuite) TestSimpleActionError() {
 }
 
 func (suite *GithubQuickActionsSuite) TestMultiActionsEvent() {
+	commands := `
+/simple a b c
+/complex a "b c"
+/simple
+/complex /simple
+`
 	event := &github.IssuesEvent{
 		Action: github.String("created"),
 		Issue: &github.Issue{
-			Body: github.String("/simple a b c\n/simple\n/complex\n/complex /simple\n\n/simple not complex"),
+			Body: github.String(commands),
 		},
 	}
 	payload, _ := json.Marshal(event)
@@ -204,16 +210,13 @@ func (suite *GithubQuickActionsSuite) TestMultiActionsEvent() {
 	suite.SimpleQA.
 		On("Fnc", mock.Anything, []string{}).
 		Return(nil)
-	suite.SimpleQA.
-		On("Fnc", mock.Anything, []string{"not", "complex"}).
-		Return(fmt.Errorf("yep, not complex at all"))
 
 	suite.ComplexQA.
-		On("Fnc", mock.Anything, []string{}).
+		On("Fnc", mock.Anything, []string{"a", "b c"}).
 		Return(nil)
 	suite.ComplexQA.
 		On("Fnc", mock.Anything, []string{"/simple"}).
-		Return(fmt.Errorf("don't do that, please"))
+		Return(nil)
 
 	err := suite.GithubQuickActions.Handle(
 		context.Background(),
@@ -223,19 +226,11 @@ func (suite *GithubQuickActionsSuite) TestMultiActionsEvent() {
 	)
 
 	suite.SimpleQA.AssertExpectations(suite.T())
-	suite.SimpleQA.AssertNumberOfCalls(suite.T(), "Fnc", 3)
+	suite.SimpleQA.AssertNumberOfCalls(suite.T(), "Fnc", 2)
 	suite.ComplexQA.AssertExpectations(suite.T())
 	suite.ComplexQA.AssertNumberOfCalls(suite.T(), "Fnc", 2)
 
-	suite.Assert().Error(err)
-	suite.Assert().IsType(&multierror.Error{}, err)
-	suite.Assert().NotPanics(func() {
-		suite.Assert().Len(err.(*multierror.Error).WrappedErrors(), 2)
-		sort.Sort(err.(*multierror.Error))
-
-		suite.Assert().EqualError(err.(*multierror.Error).WrappedErrors()[0], "don't do that, please")
-		suite.Assert().EqualError(err.(*multierror.Error).WrappedErrors()[1], "yep, not complex at all")
-	})
+	suite.Assert().NoError(err)
 }
 
 func (suite *GithubQuickActionsSuite) TestMultiActionsOnSpecificEvent() {
