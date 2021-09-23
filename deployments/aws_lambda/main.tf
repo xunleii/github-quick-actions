@@ -52,7 +52,8 @@ module "app_lambda" {
 
   create_package         = false
   publish                = true
-  local_existing_package = local.app_archive
+  local_existing_package = data.archive_file.app_archive.output_path
+  hash_extra             = data.archive_file.app_archive.output_sha
 
   environment_variables = {
     "GQA_GITHUB_APP_ID"         = var.github_app_id
