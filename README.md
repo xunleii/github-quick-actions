@@ -46,6 +46,9 @@ threads.
 | :-------------: | :-----------------  | :----------  | :-------------: |
 | `/assign @user [@user...]` | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | Assign one/several users<br>_(use `me` to assign yourself)_ |
 | `/unassign @user [@user...]` | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | Remove one/several assignees<br>_(use `me` to remove yourself)_ |
+| `/label ~label [~label...]` | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | Add one or more labels.<br>_Label names can also start without a tilde (`~`)._ |
+| `/unlabel ~label [~label...]`<br>`/remove_label ~label [~label...]` | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | Remove specified labels.<br>_Label names can also start without a tilde (`~`)._ |
+| `/unlabel`<br>`/remove_label` | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | **&#9676;** No _(description)_<br/>**&#10003;** _Yes (comment)_ | Remove all labels.<br> |
 
 ## Quick actions to be developed
 
