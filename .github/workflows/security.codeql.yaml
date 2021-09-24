@@ -26,7 +26,7 @@ jobs:
         uses: github/codeql-action/analyze@1b37538d9c22dd3f3d0c52992fa20da98683bd34 # renovate: tag=v1.0.15
         continue-on-error: true
       - name: Unlabel 'security:CodeQL'
-        uses: actions/github-script@deb7ae927cc19ae3a8b57293dd5cd2f16171e1e2 # renovate: tag=v4.1.1
+        uses: actions/github-script@441359b1a30438de65712c2fbca0abe4816fa667 # renovate: tag=v5.0.0
         with:
           script: |
             github.issues.removeLabel({
