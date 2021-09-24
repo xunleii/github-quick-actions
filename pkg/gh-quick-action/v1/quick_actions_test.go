@@ -1,4 +1,4 @@
-package quick_action_test
+package v1_test
 
 import (
 	"context"
@@ -15,40 +15,40 @@ import (
 
 	"github.com/google/uuid"
 
-	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action"
-	"xnku.be/github-quick-actions/pkg/gh-quick-action/fixtures"
+	"xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
+	"xnku.be/github-quick-actions/pkg/gh-quick-action/v1/fixtures"
 )
 
 type GithubQuickActionsSuite struct {
 	suite.Suite
-	GithubQuickActions *quick_action.GithubQuickActions
+	GithubQuickActions *v1.GithubQuickActions
 
-	SimpleQA  *quick_action.MockGithubQuickActionHandler
-	ComplexQA *quick_action.MockGithubQuickActionHandler
+	SimpleQA  *v1.MockGithubQuickActionHandler
+	ComplexQA *v1.MockGithubQuickActionHandler
 }
 
 func (suite *GithubQuickActionsSuite) SetupTest() {
-	suite.SimpleQA = &quick_action.MockGithubQuickActionHandler{}
-	suite.ComplexQA = &quick_action.MockGithubQuickActionHandler{}
+	suite.SimpleQA = &v1.MockGithubQuickActionHandler{}
+	suite.ComplexQA = &v1.MockGithubQuickActionHandler{}
 
-	suite.GithubQuickActions = quick_action.NewGithubQuickActions(&fixtures.MockClientCreator{})
+	suite.GithubQuickActions = v1.NewGithubQuickActions(&fixtures.MockClientCreator{})
 
 	suite.GithubQuickActions.AddQuickAction(
 		"simple",
-		quick_action.GithubQuickAction{
-			OnEvent: quick_action.GithubIssueCommentEvent,
+		v1.GithubQuickAction{
+			OnEvent: v1.GithubIssueCommentEvent,
 			Handler: suite.SimpleQA.Fnc,
 		},
-		quick_action.GithubQuickAction{
-			OnEvent: quick_action.GithubIssuesEvent,
+		v1.GithubQuickAction{
+			OnEvent: v1.GithubIssuesEvent,
 			Handler: suite.SimpleQA.Fnc,
 		},
 	)
 
 	suite.GithubQuickActions.AddQuickAction(
 		"complex",
-		quick_action.GithubQuickAction{
-			OnEvent: quick_action.GithubIssuesEvent,
+		v1.GithubQuickAction{
+			OnEvent: v1.GithubIssuesEvent,
 			Handler: suite.ComplexQA.Fnc,
 		},
 	)

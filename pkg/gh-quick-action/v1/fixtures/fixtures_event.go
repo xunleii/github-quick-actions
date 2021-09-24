@@ -8,7 +8,7 @@ import (
 	"github.com/Masterminds/sprig"
 	"github.com/google/go-github/v39/github"
 
-	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action"
+	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
 )
 
 const (

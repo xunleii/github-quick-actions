@@ -14,7 +14,7 @@ import (
 
 	quick_actions "xnku.be/github-quick-actions/internal/quick-actions"
 	"xnku.be/github-quick-actions/pkg/cmd"
-	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action"
+	"xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
 )
 
 func main() {
@@ -43,14 +43,14 @@ func main() {
 	}
 
 	logger.Info().Msgf("prepare issues/pull_requests quick actions handlers")
-	issueQuickActions := quick_action.NewGithubQuickActions(cc)
+	issueQuickActions := v1.NewGithubQuickActions(cc)
 	issueQuickActions.AddQuickAction("assign", quick_actions.AssignIssueComment)
 	issueQuickActions.AddQuickAction("unassign", quick_actions.UnassignIssueComment)
 
 	app := githubapp.NewEventDispatcher(
 		[]githubapp.EventHandler{issueQuickActions},
 		appConfig.App.WebhookSecret,
-		githubapp.WithErrorCallback(quick_action.HttpErrorCallback),
+		githubapp.WithErrorCallback(v1.HttpErrorCallback),
 	)
 
 	r := mux.NewRouter()

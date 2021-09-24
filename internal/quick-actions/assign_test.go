@@ -11,18 +11,18 @@ import (
 	"github.com/stretchr/testify/require"
 
 	quick_actions "xnku.be/github-quick-actions/internal/quick-actions"
-	"xnku.be/github-quick-actions/pkg/gh-quick-action/fixtures"
+	fixtures2 "xnku.be/github-quick-actions/pkg/gh-quick-action/v1/fixtures"
 )
 
-var AssignIssueCommentFixtures = fixtures.EventFixtures{
+var AssignIssueCommentFixtures = fixtures2.EventFixtures{
 	QuickActionName: "assign",
-	EventGenerator:  fixtures.IssueCommentEventType,
+	EventGenerator:  fixtures2.IssueCommentEventType,
 
-	Fixtures: []fixtures.EventFixture{
+	Fixtures: []fixtures2.EventFixture{
 		{
 			Name:      "simple assignment",
 			Arguments: []string{"@mojombo"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees": {
 					Response: &http.Response{StatusCode: http.StatusCreated},
 					Validate: func(t *testing.T, r *http.Request, payload []byte) {
@@ -36,7 +36,7 @@ var AssignIssueCommentFixtures = fixtures.EventFixtures{
 		{
 			Name:      "multi assignment",
 			Arguments: []string{"@mojombo", "@defunkt"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees": {
 					Response: &http.Response{StatusCode: http.StatusCreated},
 					Validate: func(t *testing.T, r *http.Request, payload []byte) {
@@ -50,7 +50,7 @@ var AssignIssueCommentFixtures = fixtures.EventFixtures{
 		{
 			Name:      "self assignment",
 			Arguments: []string{"me"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees": {
 					Response: &http.Response{StatusCode: http.StatusCreated},
 					Validate: func(t *testing.T, r *http.Request, payload []byte) {
@@ -64,7 +64,7 @@ var AssignIssueCommentFixtures = fixtures.EventFixtures{
 		{
 			Name:      "multi assignment with self",
 			Arguments: []string{"@mojombo", "@defunkt", "me"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees": {
 					Response: &http.Response{StatusCode: http.StatusNoContent},
 					Validate: func(t *testing.T, r *http.Request, payload []byte) {
@@ -78,7 +78,7 @@ var AssignIssueCommentFixtures = fixtures.EventFixtures{
 		{
 			Name:      "multi assignment duplication",
 			Arguments: []string{"@mojombo", "@mojombo"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees": {
 					Response: &http.Response{StatusCode: http.StatusCreated},
 					Validate: func(t *testing.T, r *http.Request, payload []byte) {
@@ -93,17 +93,17 @@ var AssignIssueCommentFixtures = fixtures.EventFixtures{
 		{
 			Name:      "invalid assignee",
 			Arguments: []string{"@"},
-			APICalls:  map[string]fixtures.APICallMITM{},
+			APICalls:  map[string]fixtures2.APICallMITM{},
 		},
 		{
 			Name:      "empty assignee",
 			Arguments: []string{""},
-			APICalls:  map[string]fixtures.APICallMITM{},
+			APICalls:  map[string]fixtures2.APICallMITM{},
 		},
 		{
 			Name:      "repository/owner not found",
 			Arguments: []string{"@mojombo"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees": {
 					Response: func() *http.Response {
 						req, _ := http.NewRequest(http.MethodPost, "https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees", nil)
@@ -123,7 +123,7 @@ var AssignIssueCommentFixtures = fixtures.EventFixtures{
 		{
 			Name:      "assignee doesn't have permission to this repo",
 			Arguments: []string{"@mojombo"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees": {
 					Response: &http.Response{StatusCode: http.StatusCreated}, // NOTE: don't know why ...
 					Validate: func(t *testing.T, r *http.Request, payload []byte) {

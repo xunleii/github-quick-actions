@@ -13,8 +13,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	quick_actions "xnku.be/github-quick-actions/internal/quick-actions"
-	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action"
-	"xnku.be/github-quick-actions/pkg/gh-quick-action/fixtures"
+	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
+	fixtures2 "xnku.be/github-quick-actions/pkg/gh-quick-action/v1/fixtures"
 )
 
 func TestUnassignE2E(t *testing.T) {
@@ -25,15 +25,15 @@ func TestUnassignE2E(t *testing.T) {
 		`/unassign me\n/assign @mojombo`,
 	}
 
-	cc := &fixtures.MockClientCreator{}
-	cc.On("NewInstallationClient", mock.Anything).Return(fixtures.MockGithubClient, nil)
+	cc := &fixtures2.MockClientCreator{}
+	cc.On("NewInstallationClient", mock.Anything).Return(fixtures2.MockGithubClient, nil)
 	cc.On("github.Request", mock.Anything).Return(&http.Response{StatusCode: http.StatusCreated}, nil)
 	cc.On("github.RequestValidation", mock.Anything).Return(func(*http.Request) {})
 
 	ghApp := quick_action.NewGithubQuickActions(cc)
 	ghApp.AddQuickAction("unassign", quick_actions.UnassignIssueComment)
 
-	payloadTpl, _ := template.New("").Funcs(sprig.TxtFuncMap()).Parse(fixtures.IssueCommentEventJSON)
+	payloadTpl, _ := template.New("").Funcs(sprig.TxtFuncMap()).Parse(fixtures2.IssueCommentEventJSON)
 	for _, comment := range comments {
 		t.Run(comment, func(t *testing.T) {
 			buffer := &bytes.Buffer{}

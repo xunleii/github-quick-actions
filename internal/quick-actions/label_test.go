@@ -11,18 +11,18 @@ import (
 	"github.com/stretchr/testify/require"
 
 	quick_actions "xnku.be/github-quick-actions/internal/quick-actions"
-	"xnku.be/github-quick-actions/pkg/gh-quick-action/fixtures"
+	fixtures2 "xnku.be/github-quick-actions/pkg/gh-quick-action/v1/fixtures"
 )
 
-var LabelIssueCommentFixtures = fixtures.EventFixtures{
+var LabelIssueCommentFixtures = fixtures2.EventFixtures{
 	QuickActionName: "label",
-	EventGenerator:  fixtures.IssueCommentEventType,
+	EventGenerator:  fixtures2.IssueCommentEventType,
 
-	Fixtures: []fixtures.EventFixture{
+	Fixtures: []fixtures2.EventFixture{
 		{
 			Name:      "simple label",
 			Arguments: []string{"~feature"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels": {
 					Response: &http.Response{StatusCode: http.StatusCreated},
 					Validate: func(t *testing.T, r *http.Request, payload []byte) {
@@ -36,7 +36,7 @@ var LabelIssueCommentFixtures = fixtures.EventFixtures{
 		{
 			Name:      "multi label",
 			Arguments: []string{"feature", "~doc"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels": {
 					Response: &http.Response{StatusCode: http.StatusCreated},
 					Validate: func(t *testing.T, r *http.Request, payload []byte) {
@@ -50,7 +50,7 @@ var LabelIssueCommentFixtures = fixtures.EventFixtures{
 		{
 			Name:      "multi label duplication",
 			Arguments: []string{"feature", "feature"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels": {
 					Response: &http.Response{StatusCode: http.StatusCreated},
 					Validate: func(t *testing.T, r *http.Request, payload []byte) {
@@ -65,12 +65,12 @@ var LabelIssueCommentFixtures = fixtures.EventFixtures{
 		{
 			Name:      "empty label",
 			Arguments: []string{""},
-			APICalls:  map[string]fixtures.APICallMITM{},
+			APICalls:  map[string]fixtures2.APICallMITM{},
 		},
 		{
 			Name:      "repository/owner not found",
 			Arguments: []string{"feature"},
-			APICalls: map[string]fixtures.APICallMITM{
+			APICalls: map[string]fixtures2.APICallMITM{
 				"POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels": {
 					Response: func() *http.Response {
 						req, _ := http.NewRequest(http.MethodPost, "https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels", nil)

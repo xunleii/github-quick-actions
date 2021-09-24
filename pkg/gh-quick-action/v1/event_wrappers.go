@@ -1,4 +1,4 @@
-package quick_action
+package v1
 
 import (
 	"encoding/json"

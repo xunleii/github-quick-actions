@@ -9,15 +9,16 @@ import (
 	"github.com/palantir/go-githubapp/githubapp"
 	"github.com/rs/zerolog"
 	"github.com/thoas/go-funk"
-	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action"
+
+	"xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
 )
 
-var UnassignIssueComment = quick_action.GithubQuickAction{
-	OnEvent: quick_action.GithubIssueCommentEvent,
+var UnassignIssueComment = v1.GithubQuickAction{
+	OnEvent: v1.GithubIssueCommentEvent,
 	Handler: Unassign,
 }
 
-func Unassign(ctx context.Context, cc githubapp.ClientCreator, event quick_action.GithubQuickActionEvent) error {
+func Unassign(ctx context.Context, cc githubapp.ClientCreator, event v1.GithubQuickActionEvent) error {
 	logger := zerolog.Ctx(ctx).With().
 		Str("quick_action", "unassign").
 		Logger()

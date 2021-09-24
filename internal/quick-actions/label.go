@@ -10,15 +10,15 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/thoas/go-funk"
 
-	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action"
+	"xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
 )
 
-var LabelIssueComment = quick_action.GithubQuickAction{
-	OnEvent: quick_action.GithubIssueCommentEvent,
+var LabelIssueComment = v1.GithubQuickAction{
+	OnEvent: v1.GithubIssueCommentEvent,
 	Handler: Label,
 }
 
-func Label(ctx context.Context, cc githubapp.ClientCreator, event quick_action.GithubQuickActionEvent) error {
+func Label(ctx context.Context, cc githubapp.ClientCreator, event v1.GithubQuickActionEvent) error {
 	logger := zerolog.Ctx(ctx).With().
 		Str("quick_action", "label").
 		Logger()
