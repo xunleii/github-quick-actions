@@ -17,12 +17,11 @@ import (
 	"xnku.be/github-quick-actions/pkg/gh-quick-action/fixtures"
 )
 
-func TestUnassignE2E(t *testing.T) {
+func TestLabelE2E(t *testing.T) {
 	comments := []string{
-		"/unassign me",
-		"/unassign @mojombo",
-		"/unassign me @mojombo",
-		`/unassign me\n/assign @mojombo`,
+		"/label feature",
+		"/label bug feature",
+		`/label feature\n/label "bug 'n feature"`,
 	}
 
 	cc := &fixtures.MockClientCreator{}
@@ -31,7 +30,7 @@ func TestUnassignE2E(t *testing.T) {
 	cc.On("github.RequestValidation", mock.Anything).Return(func(*http.Request) {})
 
 	ghApp := quick_action.NewGithubQuickActions(cc)
-	ghApp.AddQuickAction("unassign", quick_actions.UnassignIssueComment)
+	ghApp.AddQuickAction("label", quick_actions.LabelIssueComment)
 
 	payloadTpl, _ := template.New("").Funcs(sprig.TxtFuncMap()).Parse(fixtures.IssueCommentEventJSON)
 	for _, comment := range comments {
@@ -40,7 +39,7 @@ func TestUnassignE2E(t *testing.T) {
 			err := payloadTpl.Execute(buffer, map[string]interface{}{"body": comment})
 			require.NoError(t, err)
 
-			err = ghApp.Handle(context.TODO(), quick_actions.UnassignIssueComment.OnEvent.Name(), "", buffer.Bytes())
+			err = ghApp.Handle(context.TODO(), quick_actions.LabelIssueComment.OnEvent.Name(), "", buffer.Bytes())
 			assert.NoError(t, err)
 		})
 	}

@@ -109,7 +109,7 @@ func GithubApplicationFromEnvironment() AdapterOption {
 			if !exists {
 				zerolog.DefaultContextLogger.
 					Fatal().
-					Msgf("environment variable '%s' is required", cmd.EnvVarIntegrationID,)
+					Msgf("environment variable '%s' is required", cmd.EnvVarIntegrationID)
 			}
 			if cliConfig.Github.Application.IntegrationID, err = strconv.Atoi(integrationID); err != nil {
 				zerolog.DefaultContextLogger.
@@ -158,6 +158,7 @@ func GithubApplicationFromEnvironment() AdapterOption {
 		issueQuickActions := quick_action.NewGithubQuickActions(cc)
 		issueQuickActions.AddQuickAction("assign", quick_actions.AssignIssueComment)
 		issueQuickActions.AddQuickAction("unassign", quick_actions.UnassignIssueComment)
+		issueQuickActions.AddQuickAction("label", quick_actions.LabelIssueComment)
 
 		zerolog.DefaultContextLogger.WithLevel(zerolog.InfoLevel).
 			Msgf("prepare application event dispatcher")

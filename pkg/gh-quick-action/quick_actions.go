@@ -2,12 +2,12 @@ package quick_action
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/palantir/go-githubapp/githubapp"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/thoas/go-funk"
 )
@@ -63,7 +63,7 @@ func (a GithubQuickActions) Handle(ctx context.Context, eventType, deliveryID st
 
 	event, err := eventWrapper.Wraps(payload)
 	if err != nil {
-		return errors.Wrapf(err, "failed to parse '%s' event payload", eventType)
+		return fmt.Errorf("failed to parse '%s' event payload: %w", eventType, err)
 	}
 
 	// ignore if is not a new created comment
@@ -117,11 +117,22 @@ func (a GithubQuickActions) Handle(ctx context.Context, eventType, deliveryID st
 			continue
 		}
 
+		csvR := csv.NewReader(strings.NewReader(line))
+		csvR.Comma = ' '
+
+		record, err := csvR.Read()
+		if err != nil {
+			logger.Error().
+				Err(err).Str("quick_action", action).
+				Msgf("failed to parse arguments '%s', ignored", line)
+			continue
+		}
+
 		var args []string
-		for _, arg := range strings.Split(line, " ") {
-			arg = strings.TrimSpace(arg)
-			if arg != "" {
-				args = append(args, arg)
+		for _, item := range record {
+			item := strings.TrimSpace(item)
+			if len(item) > 0 {
+				args = append(args, item)
 			}
 		}
 		quickActions = append(quickActions, args)

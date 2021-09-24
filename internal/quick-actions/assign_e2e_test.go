@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/Masterminds/sprig"
+
 	quick_actions "xnku.be/github-quick-actions/internal/quick-actions"
 	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action"
 	"xnku.be/github-quick-actions/pkg/gh-quick-action/fixtures"
@@ -32,7 +34,7 @@ func TestAssignE2E(t *testing.T) {
 	ghApp := quick_action.NewGithubQuickActions(cc)
 	ghApp.AddQuickAction("assign", quick_actions.AssignIssueComment)
 
-	payloadTpl, _ := template.New("").Parse(fixtures.IssueCommentEventJSON)
+	payloadTpl, _ := template.New("").Funcs(sprig.TxtFuncMap()).Parse(fixtures.IssueCommentEventJSON)
 	for _, comment := range comments {
 		t.Run(comment, func(t *testing.T) {
 			buffer := &bytes.Buffer{}
