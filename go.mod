@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-lambda-go v1.26.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.11.0
 	github.com/brianvoe/gofakeit/v6 v6.8.0
-	github.com/google/go-github/v39 v39.0.0
+	github.com/google/go-github/v39 v39.1.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
