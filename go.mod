@@ -3,7 +3,7 @@ module xnku.be/github-quick-actions
 go 1.17
 
 require (
-	github.com/Masterminds/sprig v2.22.0+incompatible
+	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/alecthomas/kong v0.2.17
 	github.com/aws/aws-lambda-go v1.26.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.11.0
