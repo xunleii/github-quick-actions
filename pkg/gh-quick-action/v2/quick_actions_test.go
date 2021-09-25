@@ -72,6 +72,7 @@ func (ts *quickActionsTestSuite) TestPayloadToCommands() {
 	payload := mockEventPayload{body: `
   
 /
+/ 
 // invalid command
 /unknown "command"
 /cmd#1
