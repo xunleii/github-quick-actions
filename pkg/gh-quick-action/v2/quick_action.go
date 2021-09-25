@@ -1,4 +1,4 @@
-package v1
+package gh_quick_actions
 
 import (
 	"context"

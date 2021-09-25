@@ -1,4 +1,4 @@
-package v1
+package gh_quick_actions
 
 import (
 	"encoding/json"
@@ -30,17 +30,17 @@ var payloadFactory = map[EventType]func([]byte) (EventPayload, error){
 }
 
 // PayloadFactory generates an EventPayload using the given JSON.
-func PayloadFactory(eventType EventType, payload []byte) (EventPayload, error) {
+func PayloadFactory(eventType EventType, json []byte) (EventPayload, error) {
 	builder, exists := payloadFactory[eventType]
 	if !exists {
-		return nil, fmt.Errorf("event type '%s' not currently managed", eventType)
+		return nil, fmt.Errorf("event type '%s' not managed", eventType)
 	}
 
-	eventPayload, err := builder(payload)
+	payload, err := builder(json)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract data from JSON for event '%s': %w", eventType, err)
 	}
-	return eventPayload, nil
+	return payload, nil
 }
 
 //@formatter:off

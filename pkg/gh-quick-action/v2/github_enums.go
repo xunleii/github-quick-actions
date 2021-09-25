@@ -1,4 +1,4 @@
-package v1
+package gh_quick_actions
 
 // EventType enumerates all currently managed event types
 type EventType string
