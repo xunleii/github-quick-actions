@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"strings"
+	"unicode"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/palantir/go-githubapp/githubapp"
@@ -128,28 +129,26 @@ func (a GithubQuickActions) payloadToCommands(ctx context.Context, event EventPa
 
 	var commands []*EventCommand
 	for n, line := range strings.Split(event.Body(), "\n") {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			// empty line, ignored
-			continue
-		}
-
-		if line[0] != '/' {
+		if line == "" || line[0] != '/' {
 			// not a command, ignored
 			logger.Trace().Msgf("no command on line n°%d, ignored...", n)
 			continue
 		}
 
-		commandLine := strings.Split(line, " ")
-		if commandLine[0] == "/" {
-			// empty command, ignored
-			logger.Trace().Msgf("line n°%d has an empty command, ignored...", n)
-			continue
-		}
-
 		// NOTE: in order to keep to CPU time, we avoid creating the CSV and
 		// 		 parse the line if the action doesn't exist.
-		command := commandLine[0][1:]
+		idx := strings.IndexFunc(line, unicode.IsSpace)
+		command := line[1:]
+		switch idx {
+		case 1: // NOTE: if idx == 1 means that le first "word" is only `/` and should be ignored
+			logger.Trace().Msgf("no command on line n°%d, ignored...", n)
+			continue
+		case -1:
+			// ignore because no space found means that the full line is the command
+		default:
+			command = line[1:idx]
+		}
+
 		if _, exists := actions[command]; !exists {
 			logger.Warn().Msgf("quick action '/%s' doesn't exists, ignored", command)
 			continue
@@ -178,7 +177,7 @@ func (a GithubQuickActions) payloadToCommands(ctx context.Context, event EventPa
 
 		commands = append(commands, &EventCommand{
 			Command:   command,
-			Arguments: args,
+			Arguments: args[1:],
 			Payload:   event,
 		})
 	}

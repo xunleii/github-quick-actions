@@ -19,24 +19,24 @@ func TestHttpErrorCallbackSimple(t *testing.T) {
 	HttpErrorCallback(wr, nil, fmt.Errorf(strErr))
 
 	assert.Equal(t, http.StatusInternalServerError, wr.Code)
-	assert.Equal(t, strErr, wr.Body.String())
+	assert.Equal(t, strErr+"\n", wr.Body.String())
 }
 
 func TestHttpErrorCallbackMultiError(t *testing.T) {
-	strErrs := []string{"err #1", "err #2", "err #3"}
+	strErrs := []string{uuid.New().String(), uuid.New().String(), uuid.New().String()}
 
 	errs := &multierror.Error{}
-	errs = multierror.Append(errs, fmt.Errorf(uuid.New().String()))
-	errs = multierror.Append(errs, fmt.Errorf(uuid.New().String()))
-	errs = multierror.Append(errs, fmt.Errorf(uuid.New().String()))
+	for _, err := range strErrs {
+		errs = multierror.Append(errs, fmt.Errorf(err))
+	}
 
 	wr := httptest.NewRecorder()
 	HttpErrorCallback(wr, nil, errs)
 
-	var jsonResponse struct{ errors []string }
+	var jsonResponse struct{ Errors []string }
 	err := json.Unmarshal(wr.Body.Bytes(), &jsonResponse)
 
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusInternalServerError, wr.Code)
-	assert.Equal(t, strErrs, jsonResponse.errors)
+	assert.Equal(t, strErrs, jsonResponse.Errors)
 }
