@@ -76,7 +76,7 @@ Feature: remove label with /unlabel ~label [~label...] on issue comment event
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unlabel" for "issue_comment" event with no argument by sending these following requests
+    Then Github Quick Actions should handle command "/unlabel" for "issue_comment" event without argument by sending these following requests
       | API request method | API request URL                                                           | API request payload |
       | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/0/labels |                     |
 

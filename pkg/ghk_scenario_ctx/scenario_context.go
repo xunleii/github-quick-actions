@@ -65,11 +65,11 @@ func ScenarioInitializer(quickActions map[string]gh_quick_actions.QuickAction) f
 		ctx.Step(`^Github Quick Actions shouldn't do anything$`, scenario.assertNoQuickActionsCalled)
 		ctx.Step(`^Github Quick Actions should return these errors$`, scenario.assertErrorsHasBeenReturned)
 		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with arguments (\[.+\]) by sending these following requests$`, scenario.assertCommandTriggeredSuccessfully)
-		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with no argument by sending these following requests$`, scenario.assertNoArgCommandTriggeredSuccessfully)
+		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event without argument by sending these following requests$`, scenario.assertNoArgCommandTriggeredSuccessfully)
 		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with arguments (\[.+\]) without sending anything$`, scenario.assertCommandTriggeredSuccessfullyWithoutRequest)
-		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with no argument without sending anything$`, scenario.assertNoArgCommandTriggeredSuccessfullyWithoutRequest)
+		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event without argument without sending anything$`, scenario.assertNoArgCommandTriggeredSuccessfullyWithoutRequest)
 		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with arguments (\[.+\]) but returns this error: '(.+)'$`, scenario.assertCommandTriggeredWithError)
-		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with no argument but returns this error: '(.+)'$`, scenario.assertNoArgCommandTriggeredWithError)
+		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event without argument but returns this error: '(.+)'$`, scenario.assertNoArgCommandTriggeredWithError)
 	}
 }
 

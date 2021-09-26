@@ -20,7 +20,7 @@ Feature: handle Github event
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/hello_world" for "issue_comment" event with no argument by sending these following requests
+    Then Github Quick Actions should handle command "/hello_world" for "issue_comment" event without argument by sending these following requests
       | API request method | API request URL                                                           | API request payload |
       | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["hello_world"]     |
 
@@ -38,7 +38,7 @@ Feature: handle Github event
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/hello_world" for "issue_comment" event with no argument by sending these following requests
+    Then Github Quick Actions should handle command "/hello_world" for "issue_comment" event without argument by sending these following requests
       | API request method | API request URL                                                           | API request payload |
       | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["hello_world"]     |
     And Github Quick Actions should handle command "/hello_world" for "issue_comment" event with arguments ["all","all 'n' everyone"] by sending these following requests
@@ -60,4 +60,4 @@ Feature: handle Github event
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/hello_world" for "issue_comment" event with no argument but returns this error: 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels: 404 Not Found []'
+    Then Github Quick Actions should handle command "/hello_world" for "issue_comment" event without argument but returns this error: 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels: 404 Not Found []'

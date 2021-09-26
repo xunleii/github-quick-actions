@@ -130,7 +130,7 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment event
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event with no argument without sending anything
+    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event without argument without sending anything
 
   @unassign
   Scenario: /unassign me on an invalid repository

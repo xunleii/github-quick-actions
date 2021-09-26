@@ -75,7 +75,7 @@ Feature: add label with /label ~label [~label...] on issue comment event
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/label" for "issue_comment" event with no argument without sending anything
+    Then Github Quick Actions should handle command "/label" for "issue_comment" event without argument without sending anything
 
   @label
   Scenario: /label ~feature on an invalid repository

@@ -130,7 +130,7 @@ Feature: assign someone with /assign @user [@user...] on issue comment event
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/assign" for "issue_comment" event with no argument without sending anything
+    Then Github Quick Actions should handle command "/assign" for "issue_comment" event without argument without sending anything
 
   @assign
   Scenario: /assign me on an invalid repository
