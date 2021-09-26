@@ -14,7 +14,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/palantir/go-githubapp v0.9.2
-	github.com/prometheus/common v0.30.0
+	github.com/prometheus/common v0.31.0
 	github.com/rs/zerolog v1.25.0
 	github.com/shurcooL/githubv4 v0.0.0-20210922025249-6831e00d857f
 	github.com/stretchr/testify v1.7.0
