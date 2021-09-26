@@ -3,6 +3,9 @@ package gqa_scenario_context
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
+	"sync"
+	"unicode"
 
 	gh_quick_actions "xnku.be/github-quick-actions/pkg/gh_quick_action/v2"
 )
@@ -17,6 +20,7 @@ type (
 		called   int
 		proxies  map[string]*ProxiesCommand
 		scenario *QuickActionScenarioContext
+		mx       sync.Mutex
 	}
 
 	ProxiesCommand struct {
@@ -26,6 +30,8 @@ type (
 )
 
 func (action *ProxyQuickAction) HandleCommand(ctx *gh_quick_actions.EventContext, command *gh_quick_actions.EventCommand) error {
+	action.mx.Lock()
+	defer action.mx.Unlock()
 	if action.proxies == nil {
 		action.proxies = map[string]*ProxiesCommand{}
 	}
@@ -44,7 +50,16 @@ func (action *ProxyQuickAction) HandleCommand(ctx *gh_quick_actions.EventContext
 	action.called++
 	err := action.QuickAction.HandleCommand(ctx, command)
 	if err != nil {
-		proxy.Errors = append(proxy.Errors, err.Error())
+		strErr := strings.Map(func(r rune) rune {
+			switch {
+			case unicode.IsSpace(r): // NOTE: replace all \t, \n ... with simple space
+				return ' '
+			default:
+				return r
+			}
+		}, err.Error())
+
+		proxy.Errors = append(proxy.Errors, strings.TrimSpace(strErr))
 	}
 
 	return err

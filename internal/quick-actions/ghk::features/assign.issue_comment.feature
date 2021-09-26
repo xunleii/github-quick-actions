@@ -116,6 +116,23 @@ Feature: assign someone with /assign @user [@user...] on issue comment event
     Then Github Quick Actions should handle command "/assign" for "issue_comment" event with arguments ["mojombo"] without sending anything
 
   @assign
+  Scenario: /assign without argument
+    When Github sends an event "issue_comment" with
+      """
+      {
+        "action": "created",
+        "comment": { "body": "/assign", "user": { "login":"xunleii" }},
+        "repository": {
+          "owner": { "login": "xunleii" },
+          "name": "github-quick-actions"
+        },
+        "issue": { "number": 0 },
+        "installation": { "id": 123456789 }
+      }
+      """
+    Then Github Quick Actions should handle command "/assign" for "issue_comment" event with no argument without sending anything
+
+  @assign
   Scenario: /assign me on an invalid repository
     Given Github replies to 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/0/assignees' with '404 {"message": "Not Found", "documentation_url": "https://docs.github.com/en/rest/reference/issues#add-labels-to-an-issue"}'
     When Github sends an event "issue_comment" with

@@ -165,12 +165,19 @@ tableIterator:
 		}
 
 		for _, request := range requests {
-			actual, _ := io.ReadAll(request.Body)
-			_ = request.Body.Close()
+			if request.Body == nil {
+				if expectedPayload == "" {
+					continue tableIterator
+				}
+			} else {
+				actual, _ := io.ReadAll(request.Body)
+				_ = request.Body.Close()
 
-			diff, _ := jsondiff.Compare(actual, []byte(expectedPayload), &jsondiff.Options{})
-			if diff == jsondiff.FullMatch || diff == jsondiff.SupersetMatch {
-				continue tableIterator
+				diff, _ := jsondiff.Compare(actual, []byte(expectedPayload), &jsondiff.Options{})
+				if diff == jsondiff.FullMatch || diff == jsondiff.SupersetMatch {
+					continue tableIterator
+				}
+
 			}
 		}
 
