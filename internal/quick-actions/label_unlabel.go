@@ -108,3 +108,10 @@ func (labelsHelper) getLabels(command *EventCommand) []string {
 
 	return funk.UniqString(labels)
 }
+
+func init() {
+	// NOTE: register quick actions
+	registerQuickAction("label", &LabelQuickAction{})
+	registerQuickAction("unlabel", &UnlabelQuickAction{})
+	registerQuickAction("remove_label", &UnlabelQuickAction{})
+}

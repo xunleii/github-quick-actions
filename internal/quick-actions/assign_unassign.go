@@ -101,3 +101,9 @@ func (assigneesHelper) getAssignees(command *EventCommand) []string {
 
 	return funk.UniqString(assignees)
 }
+
+func init() {
+	// NOTE: register quick actions
+	registerQuickAction("assign", &AssignQuickAction{})
+	registerQuickAction("unassign", &UnassignQuickAction{})
+}

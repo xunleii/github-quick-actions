@@ -18,7 +18,7 @@ import (
 
 	quick_actions "xnku.be/github-quick-actions/internal/quick-actions"
 	"xnku.be/github-quick-actions/pkg/cmd"
-	"xnku.be/github-quick-actions/pkg/gh_quick_action/v1"
+	appv2 "xnku.be/github-quick-actions/pkg/gh_quick_action/v2"
 )
 
 func init() {
@@ -154,19 +154,17 @@ func GithubApplicationFromEnvironment() AdapterOption {
 
 		zerolog.DefaultContextLogger.WithLevel(zerolog.InfoLevel).
 			Msgf("prepare issues/pull_requests quick actions handlers")
-		// NOTE: need something to automatically injects all actions
-		issueQuickActions := v1.NewGithubQuickActions(cc)
-		issueQuickActions.AddQuickAction("assign", quick_actions.AssignIssueComment)
-		issueQuickActions.AddQuickAction("unassign", quick_actions.UnassignIssueComment)
-		issueQuickActions.AddQuickAction("label", quick_actions.LabelIssueComment)
+
+		githubQuickActions := appv2.NewGithubQuickActions(cc)
+		quick_actions.InjectAll(githubQuickActions)
 
 		zerolog.DefaultContextLogger.WithLevel(zerolog.InfoLevel).
 			Msgf("prepare application event dispatcher")
 
 		adapter.injectGithubApp(githubapp.NewEventDispatcher(
-			[]githubapp.EventHandler{issueQuickActions},
+			[]githubapp.EventHandler{githubQuickActions},
 			appConfig.App.WebhookSecret,
-			githubapp.WithErrorCallback(v1.HttpErrorCallback),
+			githubapp.WithErrorCallback(appv2.HttpErrorCallback),
 		))
 	}
 }
