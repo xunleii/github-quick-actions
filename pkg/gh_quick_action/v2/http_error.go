@@ -1,4 +1,4 @@
-package quick_action
+package gh_quick_actions
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 )
 
 // HttpErrorCallback handles errors from Quick Actions.
-func HttpErrorCallback(w http.ResponseWriter, r *http.Request, err error) {
+func HttpErrorCallback(w http.ResponseWriter, _ *http.Request, err error) {
 	errs, valid := err.(*multierror.Error)
 	if !valid {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
