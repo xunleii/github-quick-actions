@@ -15,8 +15,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
-	"xnku.be/github-quick-actions/pkg/gh-quick-action/v1/fixtures"
+	"xnku.be/github-quick-actions/pkg/gh_quick_action/v1"
+	"xnku.be/github-quick-actions/pkg/gh_quick_action/v1/fixtures"
 )
 
 type GithubQuickActionsSuite struct {

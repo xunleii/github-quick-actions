@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
+	quick_action "xnku.be/github-quick-actions/pkg/gh_quick_action/v1"
 )
 
 type (

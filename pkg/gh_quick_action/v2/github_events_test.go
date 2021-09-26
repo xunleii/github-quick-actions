@@ -21,9 +21,9 @@ var (
 
 func TestPayloadFactory(t *testing.T) {
 	tts := []struct {
-		name      string
-		eventType EventType
-		eventJSON []byte
+		name            string
+		eventType       EventType
+		eventJSON       []byte
 		expectedPayload EventPayload
 		err             error
 	}{
@@ -82,8 +82,8 @@ type mockEventPayload struct {
 	body      string
 }
 
-func (m mockEventPayload) Type() EventType     { return m.eventType }
-func (m mockEventPayload) Action() eventAction { return m.action }
+func (m mockEventPayload) Type() EventType         { return m.eventType }
+func (m mockEventPayload) Action() eventAction     { return m.action }
 func (m mockEventPayload) RepositoryName() string  { return m.repoName }
 func (m mockEventPayload) RepositoryOwner() string { return m.repoOwner }
 func (m mockEventPayload) Body() string            { return m.body }

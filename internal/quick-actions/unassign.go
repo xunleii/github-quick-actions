@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/thoas/go-funk"
 
-	"xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
+	"xnku.be/github-quick-actions/pkg/gh_quick_action/v1"
 )
 
 var UnassignIssueComment = v1.GithubQuickAction{

@@ -64,7 +64,7 @@ func (ts *quickActionsTestSuite) TestHandles() {
 	ts.Assert().ElementsMatch([]string{"aaa", "bbb", "ccc"}, ts.GithubQuickActions.Handles())
 }
 
-// GithubQuickActions.payloadToCommands
+// ghQuickActions.payloadToCommands
 func (ts *quickActionsTestSuite) TestPayloadToCommands() {
 	ts.GithubQuickActions.AddQuickAction("cmd#1", &mockQuickAction{onEvents: []EventType{"aaa", "bbb"}})
 	ts.GithubQuickActions.AddQuickAction("cmd#2", &mockQuickAction{onEvents: []EventType{"aaa", "bbb", "ccc"}})

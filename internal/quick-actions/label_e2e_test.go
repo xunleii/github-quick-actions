@@ -13,8 +13,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	quick_actions "xnku.be/github-quick-actions/internal/quick-actions"
-	quick_action "xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
-	fixtures2 "xnku.be/github-quick-actions/pkg/gh-quick-action/v1/fixtures"
+	quick_action "xnku.be/github-quick-actions/pkg/gh_quick_action/v1"
+	fixtures2 "xnku.be/github-quick-actions/pkg/gh_quick_action/v1/fixtures"
 )
 
 func TestLabelE2E(t *testing.T) {

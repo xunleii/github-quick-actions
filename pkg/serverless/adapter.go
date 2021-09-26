@@ -18,7 +18,7 @@ import (
 
 	quick_actions "xnku.be/github-quick-actions/internal/quick-actions"
 	"xnku.be/github-quick-actions/pkg/cmd"
-	"xnku.be/github-quick-actions/pkg/gh-quick-action/v1"
+	"xnku.be/github-quick-actions/pkg/gh_quick_action/v1"
 )
 
 func init() {
