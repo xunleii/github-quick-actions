@@ -46,8 +46,8 @@ Feature: handle Github event
       | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["hello_world@all","hello_world@all-n-everyone"] |
 
   Scenario: should handle '/hello_world' with error
-    When Github replies to 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels' with '404 {"message": "Not Found", "documentation_url": "https://docs.github.com/en/rest/reference/issues#add-labels-to-an-issue"}'
-    And Github sends an event "issue_comment" with
+    Given Github replies to 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels' with '404 {"message": "Not Found", "documentation_url": "https://docs.github.com/en/rest/reference/issues#add-labels-to-an-issue"}'
+    When Github sends an event "issue_comment" with
       """
       {
         "action": "created",

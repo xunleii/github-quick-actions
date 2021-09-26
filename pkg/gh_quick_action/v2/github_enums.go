@@ -7,11 +7,11 @@ const (
 	EventTypeIssueComment EventType = "issue_comment"
 )
 
-// eventAction enumerates all possible action available on a event
-type eventAction string
+// EventAction enumerates all possible action available on a event
+type EventAction string
 
 const (
-	EventActionCreated eventAction = "created"
-	EventActionEdited  eventAction = "edited"
-	EventActionDeleted eventAction = "deleted"
+	EventActionCreated EventAction = "created"
+	EventActionEdited  EventAction = "edited"
+	EventActionDeleted EventAction = "deleted"
 )

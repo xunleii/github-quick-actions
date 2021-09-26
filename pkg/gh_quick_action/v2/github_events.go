@@ -18,9 +18,10 @@ func newIssueCommentEvent(payload []byte) (EventPayload, error) {
 }
 
 func (i *IssueCommentEvent) Type() EventType         { return EventTypeIssueComment }
-func (i *IssueCommentEvent) Action() eventAction     { return eventAction(i.GetAction()) }
+func (i *IssueCommentEvent) Action() EventAction     { return EventAction(i.GetAction()) }
 func (i *IssueCommentEvent) RepositoryName() string  { return i.GetRepo().GetName() }
 func (i *IssueCommentEvent) RepositoryOwner() string { return i.GetRepo().GetOwner().GetLogin() }
+func (i *IssueCommentEvent) IssueNumber() int        { return i.GetIssue().GetNumber() }
 func (i *IssueCommentEvent) Body() string            { return i.GetComment().GetBody() }
 func (i *IssueCommentEvent) Raw() interface{}        { return i.IssueCommentEvent }
 
@@ -42,5 +43,3 @@ func PayloadFactory(eventType EventType, json []byte) (EventPayload, error) {
 	}
 	return payload, nil
 }
-
-//@formatter:off

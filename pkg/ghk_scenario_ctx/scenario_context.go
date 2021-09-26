@@ -66,6 +66,8 @@ func ScenarioInitializer(quickActions map[string]gh_quick_actions.QuickAction) f
 		ctx.Step(`^Github Quick Actions should return these errors$`, scenario.assertErrorsHasBeenReturned)
 		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with arguments (\[.+\]) by sending these following requests$`, scenario.assertCommandTriggeredSuccessfully)
 		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with no argument by sending these following requests$`, scenario.assertNoArgCommandTriggeredSuccessfully)
+		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with arguments (\[.+\]) without sending anything$`, scenario.assertCommandTriggeredSuccessfullyWithoutRequest)
+		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with no argument without sending anything$`, scenario.assertNoArgCommandTriggeredSuccessfullyWithoutRequest)
 		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with arguments (\[.+\]) but returns this error: '(.+)'$`, scenario.assertCommandTriggeredWithError)
 		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with no argument but returns this error: '(.+)'$`, scenario.assertNoArgCommandTriggeredWithError)
 	}
@@ -130,6 +132,10 @@ func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfully(comman
 		return fmt.Errorf(`Command "/%s" on "%s" event has returned the following error(s): %v`, command, eventType, errs)
 	}
 
+	if proxy.called == 0 {
+		return fmt.Errorf(`Command "/%s" on "%s" event hasn't been called'`, command, eventType)
+	}
+
 	// check row validity
 	if len(requests.Rows) < 2 {
 		return fmt.Errorf("At least 1 request should be defined")
@@ -177,12 +183,7 @@ tableIterator:
 	case 1:
 		return fmt.Errorf(errs[0])
 	default:
-		strBuilder := strings.Builder{}
-		strBuilder.WriteString("Several requests are not validated:\n")
-		for _, err := range errs {
-			strBuilder.WriteString(fmt.Sprintf("\t%s\n", err))
-		}
-		return fmt.Errorf(strBuilder.String())
+		return fmt.Errorf("Several requests are not validated: [%s]", strings.Join(errs, ", "))
 	}
 }
 
@@ -190,6 +191,43 @@ tableIterator:
 // assertCommandTriggeredSuccessfully but for command without arguments.
 func (ctx *QuickActionScenarioContext) assertNoArgCommandTriggeredSuccessfully(command, eventType string, requests *godog.Table) error {
 	return ctx.assertCommandTriggeredSuccessfully(command, eventType, "[]", requests)
+}
+
+func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfullyWithoutRequest(command, eventType, argumentsJSON string) error {
+	proxy := ctx.registry[CommandEventTypeKey{Command: command, EventType: eventType}]
+	if proxy == nil {
+		return fmt.Errorf(`Command "/%s" for "%s" events is not registered`, command, eventType)
+	}
+
+	errs := proxy.InterceptedErrors(argumentsJSON)
+	if len(errs) != 0 {
+		return fmt.Errorf(`Command "/%s" on "%s" event has returned the following error(s): %v`, command, eventType, errs)
+	}
+
+	if proxy.called == 0 {
+		return fmt.Errorf(`Command "/%s" on "%s" event hasn't been called`, command, eventType)
+	}
+
+	if _, exists := proxy.proxies[argumentsJSON]; !exists {
+		return fmt.Errorf(`Command "/%s" (with %s) on "%s" event hasn't been called`, command, argumentsJSON, eventType)
+	}
+
+	var requests []string
+	for _, request := range proxy.proxies[argumentsJSON].Requests {
+		for key := range request.interceptedRequests {
+			requests = append(requests, fmt.Sprintf("%s %s", key.Method, key.URL))
+		}
+	}
+
+	if len(requests) > 0 {
+		return fmt.Errorf(`Command "/%s" on "%s" has sent some requests: [%s]`, command, eventType, strings.Join(requests, ", "))
+	}
+
+	return nil
+}
+
+func (ctx *QuickActionScenarioContext) assertNoArgCommandTriggeredSuccessfullyWithoutRequest(command, eventType string) error {
+	return ctx.assertCommandTriggeredSuccessfullyWithoutRequest(command, eventType, "[]")
 }
 
 // assertCommandTriggeredWithError asserts that the specified command

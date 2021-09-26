@@ -34,9 +34,10 @@ type (
 		Type() EventType
 		// Action returns the action that was performed on the comment
 		// (one of "created", "edited" or "deleted").
-		Action() eventAction
+		Action() EventAction
 		RepositoryName() string
 		RepositoryOwner() string
+		IssueNumber() int
 		Body() string
 
 		// Raw contains the raw events if it needed to be used by the

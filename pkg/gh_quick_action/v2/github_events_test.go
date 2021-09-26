@@ -15,6 +15,7 @@ var (
 		Action:  github.String("created"),
 		Repo:    &github.Repository{Name: github.String("github-quick-actions"), Owner: &github.User{Login: github.String("xunleii")}},
 		Comment: &github.IssueComment{Body: github.String("...")},
+		Issue:   &github.Issue{Number: github.Int(0)},
 	}
 	issueCommentEventFixtureJSON, _ = json.Marshal(issueCommentEventFixture)
 )
@@ -37,7 +38,7 @@ func TestPayloadFactory(t *testing.T) {
 			name:            "github.IssueCommentEvent",
 			eventType:       EventTypeIssueComment,
 			eventJSON:       issueCommentEventFixtureJSON,
-			expectedPayload: mockEventPayload{EventTypeIssueComment, EventActionCreated, "github-quick-actions", "xunleii", "..."},
+			expectedPayload: mockEventPayload{EventTypeIssueComment, EventActionCreated, "github-quick-actions", "xunleii", 0, "..."},
 		},
 		{
 			name:      "github.IssueCommentEvent@invalid",
@@ -75,17 +76,19 @@ func TestPayloadFactory(t *testing.T) {
 }
 
 type mockEventPayload struct {
-	eventType EventType
-	action    eventAction
-	repoName  string
-	repoOwner string
-	body      string
+	eventType   EventType
+	action      EventAction
+	repoName    string
+	repoOwner   string
+	issueNumber int
+	body        string
 }
 
 func (m mockEventPayload) Type() EventType         { return m.eventType }
-func (m mockEventPayload) Action() eventAction     { return m.action }
+func (m mockEventPayload) Action() EventAction     { return m.action }
 func (m mockEventPayload) RepositoryName() string  { return m.repoName }
 func (m mockEventPayload) RepositoryOwner() string { return m.repoOwner }
+func (m mockEventPayload) IssueNumber() int        { return m.issueNumber }
 func (m mockEventPayload) Body() string            { return m.body }
 func (m mockEventPayload) Raw() interface{}        { panic("not implemented") }
 
