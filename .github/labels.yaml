@@ -12,7 +12,7 @@
   color: #A2EEEF
 - name: kind/question
   description: Further information is requested
-  color: #D876E3
+  color: #D876E2
 
 - name: security:CodeQL
   description: Invoke CodeQL on the current PR
