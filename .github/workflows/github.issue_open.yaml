@@ -1,0 +1,23 @@
+name: Opened issues/pull requests
+on:
+  pull_request:
+    types: [opened, edited]
+  issues:
+    types: [opened, edited]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fregante/title-to-labels-action@473496796d1bde321043bb3238e11efb58034446 # renovate: tag=v1.1.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          keywords: bug, bug report
+          labels: kind/bug
+      - uses: fregante/title-to-labels-action@473496796d1bde321043bb3238e11efb58034446 # renovate: tag=v1.1.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          keywords: idea, feature request, suggestions, enhancement
+          labels: kind/enhancement
