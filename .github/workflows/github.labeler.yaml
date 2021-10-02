@@ -1,8 +1,9 @@
 name: Synchronize labels
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths: [.github/labels.yaml]
+
 jobs:
   sync:
     runs-on: ubuntu-latest
