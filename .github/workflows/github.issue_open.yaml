@@ -6,7 +6,8 @@ on:
     types: [opened, edited]
 
 jobs:
-  build:
+  labels:
+    name: Manage labels on opened issues/pull requests
     runs-on: ubuntu-latest
     steps:
       - uses: fregante/title-to-labels-action@473496796d1bde321043bb3238e11efb58034446 # renovate: tag=v1.1.2
