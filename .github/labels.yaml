@@ -14,6 +14,17 @@
   description: Further information is requested
   color: D876E3
 
+- name: size/xs
+  color: 7057FF
+- name: size/s
+  color: 008000
+- name: size/m
+  color: FFFF00
+- name: size/l
+  color: FF0000
+- name: size/xl
+  color: FF0000
+
 - name: security:CodeQL
   description: Invoke CodeQL on the current PR
   color: 7A55CC
