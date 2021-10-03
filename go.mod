@@ -12,6 +12,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/improbable-eng/go-httpwares v0.0.0-20200609095714-edc8019f93cc
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/palantir/go-githubapp v0.9.2
 	github.com/prometheus/common v0.31.1
