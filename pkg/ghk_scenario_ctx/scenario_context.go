@@ -16,7 +16,7 @@ import (
 	"github.com/thoas/go-funk"
 
 	gh_quick_actions "xnku.be/github-quick-actions/pkg/gh_quick_action/v2"
-	"xnku.be/github-quick-actions/pkg/httptest"
+	"xnku.be/github-quick-actions/pkg/ghk_scenario_ctx/httptest"
 )
 
 type (
