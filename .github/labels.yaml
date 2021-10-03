@@ -14,15 +14,15 @@
   description: Further information is requested
   color: D876E3
 
-- name: size/xs
+- name: size/XS
   color: 008000
-- name: size/s
+- name: size/S
   color: 008000
-- name: size/m
+- name: size/M
   color: FFFF00
-- name: size/l
+- name: size/L
   color: FF0000
-- name: size/xl
+- name: size/XL
   color: FF0000
 
 - name: security:CodeQL

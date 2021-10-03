@@ -3,34 +3,34 @@ Thresholds:
       - Add
       - Delete
     Value: 10
-    Label: size/xs
+    Label: size/XS
     Color: Green
     Formula: Sum
   - GitOperationType:
       - Add
       - Delete
     Value: 40
-    Label: size/s
+    Label: size/S
     Color: Green
     Formula: Sum
   - GitOperationType:
       - Add
       - Delete
     Value: 100
-    Label: size/m
+    Label: size/M
     Color: DarkYellow
     Formula: Sum
   - GitOperationType:
       - Add
       - Delete
     Value: 400
-    Label: size/l
+    Label: size/L
     Color: Red
     Formula: Sum
   - GitOperationType:
       - Add
       - Delete
     Value: 1000
-    Label: size/xl
+    Label: size/XL
     Color: Red
     Formula: Sum
