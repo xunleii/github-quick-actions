@@ -2,9 +2,11 @@ package gqa_scenario_context
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
-	"net/http/httptest"
+	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/cucumber/godog"
@@ -14,6 +16,7 @@ import (
 	"github.com/thoas/go-funk"
 
 	gh_quick_actions "xnku.be/github-quick-actions/pkg/gh_quick_action/v2"
+	"xnku.be/github-quick-actions/pkg/ghk_scenario_ctx/httptest"
 )
 
 type (
@@ -21,15 +24,9 @@ type (
 	// to test quick actions directly through Gherkin scenario.
 	QuickActionScenarioContext struct {
 		ghQuickActions *gh_quick_actions.GithubQuickActions
+		ghAPIProxy     *GithubAPIProxy
 
-		sharedProxy *ProxyRoundTripper
-		registry    map[CommandEventTypeKey]*ProxyQuickAction
-		errs        *multierror.Error
-	}
-
-	CommandEventTypeKey struct {
-		Command   string
-		EventType string
+		errs []error
 	}
 )
 
@@ -37,21 +34,21 @@ func ScenarioInitializer(quickActions map[string]gh_quick_actions.QuickAction) f
 	return func(ctx *godog.ScenarioContext) {
 		scenario := &QuickActionScenarioContext{
 			ghQuickActions: gh_quick_actions.NewGithubQuickActions(nil),
-			sharedProxy:    NewProxyRoundTripper(),
-			registry:       map[CommandEventTypeKey]*ProxyQuickAction{},
+			ghAPIProxy:     NewGithubAPIProxy(),
 		}
 
+		srv := httptest.NewServer(scenario.ghAPIProxy)
+
 		// NOTE: generates some steps dynamically using registered quick actions
+		client := srv.Client()
 		for command, quickAction := range quickActions {
 			for _, eventType := range quickAction.TriggerOnEvents() {
 				ctx.Step(fmt.Sprintf("^quick action \"/%s\" is registered for \"%s\" events$", command, eventType), func() {
 					proxy := &ProxyQuickAction{
 						QuickAction: quickAction,
-						proxies:     map[string]*ProxiesCommand{},
-						scenario:    scenario,
+						client:      client,
 					}
 
-					scenario.registry[CommandEventTypeKey{command, string(eventType)}] = proxy
 					scenario.ghQuickActions.AddQuickAction(command, proxy)
 				})
 			}
@@ -77,24 +74,37 @@ func ScenarioInitializer(quickActions map[string]gh_quick_actions.QuickAction) f
 // arguments (event type and JSON payload).
 func (ctx *QuickActionScenarioContext) simulateGithubEvent(eventType string, json *godog.DocString) {
 	err := ctx.ghQuickActions.Handle(context.Background(), eventType, uuid.New().String(), []byte(json.Content))
-	ctx.errs = multierror.Append(ctx.errs, err)
+	ctx.errs = append(ctx.errs, err)
 }
 
 // simulateGithubAPIReply simulates a Github reply for the given request.
-func (ctx *QuickActionScenarioContext) simulateGithubAPIReply(method, url string, code int, response string) {
-	wr := httptest.NewRecorder()
-	_, _ = wr.WriteString(response)
-	wr.Code = code
-	ctx.sharedProxy.InjectResponse(method, url, wr)
+func (ctx *QuickActionScenarioContext) simulateGithubAPIReply(method, rawURL string, code int, response string) error {
+	url, err := url.Parse(rawURL)
+	if err != nil {
+		return fmt.Errorf("failed to add response for %s %s: %w", method, url, err)
+	}
+
+	ctx.ghAPIProxy.NewRoute().
+		Methods(method).Host(url.Host).Path(url.Path).
+		HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
+			writer.WriteHeader(code)
+			_, _ = writer.Write([]byte(response))
+		})
+	return nil
 }
 
 // assertNoQuickActionsCalled asserts that Github Quick Actions didn't use any
 // Quick Actions during the current scenario.
 func (ctx *QuickActionScenarioContext) assertNoQuickActionsCalled() error {
-	for key, quickAction := range ctx.registry {
-		if quickAction.called > 0 {
-			return fmt.Errorf(`Command "/%s" has been trigger on event "%s"`, key.Command, key.EventType)
+	var commands []string
+	for _, apiRequest := range ctx.ghAPIProxy.HandledRequests() {
+		if apiRequest.IsMetadataRequest() {
+			commands = append(commands, fmt.Sprintf("%s/%s", apiRequest.EventType, apiRequest.Command))
 		}
+	}
+
+	if len(commands) > 0 {
+		return fmt.Errorf(`One or several commands has been triggered: %s`, strings.Join(funk.UniqString(commands), ", "))
 	}
 	return nil
 }
@@ -103,11 +113,17 @@ func (ctx *QuickActionScenarioContext) assertNoQuickActionsCalled() error {
 // from GithubQuickActions during the scenario.
 // WARN: only internal error should be checked here; if you want to check
 //		 specific QuickAction error, you must use the other rules.
-func (ctx *QuickActionScenarioContext) assertErrorsHasBeenReturned(errors *godog.DocString) error {
-	expectedErrors := strings.Split(errors.Content, "\n")
+func (ctx *QuickActionScenarioContext) assertErrorsHasBeenReturned(errorsDoc *godog.DocString) error {
+	expectedErrors := strings.Split(errorsDoc.Content, "\n")
 	var actualErrors []string
-	for _, err := range ctx.errs.WrappedErrors() {
-		actualErrors = append(actualErrors, err.Error())
+
+	for _, err := range ctx.errs {
+		switch err.(type) {
+		case *ProxyQuickActionErr:
+			// NOTE: only get non ProxyQuickActionErr
+		default:
+			actualErrors = append(actualErrors, err.Error())
+		}
 	}
 
 	for _, expectedError := range expectedErrors {
@@ -121,50 +137,42 @@ func (ctx *QuickActionScenarioContext) assertErrorsHasBeenReturned(errors *godog
 
 // assertCommandTriggeredSuccessfully asserts that the specified command
 // should be triggered, has sent the given requests and didn't have returned anything
-func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfully(command, eventType, argumentsJSON string, requests *godog.Table) error {
-	proxy := ctx.registry[CommandEventTypeKey{Command: command, EventType: eventType}]
-	if proxy == nil {
-		return fmt.Errorf(`Command "/%s" for "%s" events is not registered`, command, eventType)
-	}
-
-	errs := proxy.InterceptedErrors(argumentsJSON)
+func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfully(command, eventType, argumentsJSON string, requestsTable *godog.Table) error {
+	// check if no error was returned
+	errs := ctx.errorsForCommand(eventType, command, argumentsJSON)
 	if len(errs) != 0 {
-		return fmt.Errorf(`Command "/%s" on "%s" event has returned the following error(s): %v`, command, eventType, errs)
+		return fmt.Errorf(`Command "/%s" (with %s) on "%s" event has returned the following error(s): %v`, command, argumentsJSON, eventType, errs)
 	}
 
-	if proxy.called == 0 {
-		return fmt.Errorf(`Command "/%s" on "%s" event hasn't been called'`, command, eventType)
+	// check if the current command has been called at least one time
+	requests := ctx.ghAPIProxy.HandledRequests().
+		WithEventType(eventType).
+		WithCommand(command).
+		WithArguments(argumentsJSON)
+	if len(requests.With(func(r APIRequest) bool { return r.IsMetadataRequest() })) == 0 {
+		return fmt.Errorf(`Command "/%s" (with %s) on "%s" event hasn't been called'`, command, argumentsJSON, eventType)
 	}
 
 	// check row validity
-	if len(requests.Rows) < 2 {
+	if len(requestsTable.Rows) < 2 {
 		return fmt.Errorf("At least 1 request should be defined")
 	}
 
-	switch {
-	case len(requests.Rows[0].Cells) != 3:
-		fallthrough
-	case requests.Rows[0].Cells[0].Value != "API request method":
-		fallthrough
-	case requests.Rows[0].Cells[1].Value != "API request URL":
-		fallthrough
-	case requests.Rows[0].Cells[2].Value != "API request payload":
+	if len(requestsTable.Rows[0].Cells) != 3 ||
+		requestsTable.Rows[0].Cells[0].Value != "API request method" ||
+		requestsTable.Rows[0].Cells[1].Value != "API request URL" ||
+		requestsTable.Rows[0].Cells[2].Value != "API request payload" {
 		return fmt.Errorf(`Invalid table definition; it must contain these 3 columns: "API request method", "API request URL" and "API request payload"`)
 	}
 
+	// check each row
 tableIterator:
-	for _, row := range requests.Rows[1:] {
+	for _, row := range requestsTable.Rows[1:] {
 		method := row.Cells[0].Value
 		url := row.Cells[1].Value
 		expectedPayload := row.Cells[2].Value
 
-		requests := proxy.InterceptedRequests(argumentsJSON, method, url)
-		if requests == nil {
-			errs = append(errs, fmt.Sprintf(`Request %s on "%s" not found for command "/%s" (with %s) on "%s" event`, method, url, command, argumentsJSON, eventType))
-			continue
-		}
-
-		for _, request := range requests {
+		for _, request := range requests.With(func(r APIRequest) bool { return r.IsGithubAPIRequest() }) {
 			if request.Body == nil {
 				if expectedPayload == "" {
 					continue tableIterator
@@ -201,33 +209,28 @@ func (ctx *QuickActionScenarioContext) assertNoArgCommandTriggeredSuccessfully(c
 }
 
 func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfullyWithoutRequest(command, eventType, argumentsJSON string) error {
-	proxy := ctx.registry[CommandEventTypeKey{Command: command, EventType: eventType}]
-	if proxy == nil {
-		return fmt.Errorf(`Command "/%s" for "%s" events is not registered`, command, eventType)
-	}
-
-	errs := proxy.InterceptedErrors(argumentsJSON)
+	// check if no error was returned
+	errs := ctx.errorsForCommand(eventType, command, argumentsJSON)
 	if len(errs) != 0 {
-		return fmt.Errorf(`Command "/%s" on "%s" event has returned the following error(s): %v`, command, eventType, errs)
+		return fmt.Errorf(`Command "/%s" (with %s) on "%s" event has returned the following error(s): %v`, command, argumentsJSON, eventType, errs)
 	}
 
-	if proxy.called == 0 {
-		return fmt.Errorf(`Command "/%s" on "%s" event hasn't been called`, command, eventType)
+	// check if the current command has been called at least one time
+	requests := ctx.ghAPIProxy.HandledRequests().
+		WithEventType(eventType).
+		WithCommand(command).
+		WithArguments(argumentsJSON)
+	if len(requests.With(func(r APIRequest) bool { return r.IsMetadataRequest() })) == 0 {
+		return fmt.Errorf(`Command "/%s" (with %s) on "%s" event hasn't been called'`, command, argumentsJSON, eventType)
 	}
 
-	if _, exists := proxy.proxies[argumentsJSON]; !exists {
-		return fmt.Errorf(`Command "/%s" (with %s) on "%s" event hasn't been called`, command, argumentsJSON, eventType)
+	var apiCalls []string
+	for _, request := range requests.With(func(r APIRequest) bool { return r.IsGithubAPIRequest() }) {
+		apiCalls = append(apiCalls, fmt.Sprintf("%s %s", request.Method, request.URL))
 	}
 
-	var requests []string
-	for _, request := range proxy.proxies[argumentsJSON].Requests {
-		for key := range request.interceptedRequests {
-			requests = append(requests, fmt.Sprintf("%s %s", key.Method, key.URL))
-		}
-	}
-
-	if len(requests) > 0 {
-		return fmt.Errorf(`Command "/%s" on "%s" has sent some requests: [%s]`, command, eventType, strings.Join(requests, ", "))
+	if len(apiCalls) > 0 {
+		return fmt.Errorf(`Command "/%s" (with %s) on "%s" has sent some requests: [%s]`, command, argumentsJSON, eventType, strings.Join(apiCalls, ", "))
 	}
 
 	return nil
@@ -240,14 +243,9 @@ func (ctx *QuickActionScenarioContext) assertNoArgCommandTriggeredSuccessfullyWi
 // assertCommandTriggeredWithError asserts that the specified command
 // should be triggered but returned the given error
 func (ctx *QuickActionScenarioContext) assertCommandTriggeredWithError(command, eventType, argumentsJSON, error string) error {
-	proxy := ctx.registry[CommandEventTypeKey{Command: command, EventType: eventType}]
-	if proxy == nil {
-		return fmt.Errorf(`Command "/%s" for "%s" events is not registered`, command, eventType)
-	}
-
-	errs := proxy.InterceptedErrors(argumentsJSON)
+	errs := ctx.errorsForCommand(eventType, command, argumentsJSON)
 	if len(errs) == 0 {
-		return fmt.Errorf(`Command "/%s" on "%s" event didn't have returned any error`, command, eventType)
+		return fmt.Errorf(`Command "/%s" (with %s) on "%s" event didn't have returned any error`, command, argumentsJSON, eventType)
 	}
 
 	for _, err := range errs {
@@ -255,11 +253,49 @@ func (ctx *QuickActionScenarioContext) assertCommandTriggeredWithError(command, 
 			return nil
 		}
 	}
-	return fmt.Errorf(`Command "/%s" on "%s" event didn't have returned the specified error: %s`, command, eventType, errs)
+	return fmt.Errorf(`Command "/%s" (with %s) on "%s" event didn't have returned the specified error: %s`, command, argumentsJSON, eventType, error)
 }
 
 // assertNoArgCommandTriggeredWithError asserts the same things that
 // assertCommandTriggeredWithError but for command without arguments.
 func (ctx *QuickActionScenarioContext) assertNoArgCommandTriggeredWithError(command, eventType, error string) error {
 	return ctx.assertCommandTriggeredWithError(command, eventType, "[]", error)
+}
+
+// errorsForCommand returns all formatted errors for a specific command.
+func (ctx *QuickActionScenarioContext) errorsForCommand(eventType, command, argumentsJSON string) []string {
+	var errs []string
+	for _, err := range flattenErrors(ctx.errs) {
+		if _, validErr := err.(*ProxyQuickActionErr); !validErr {
+			continue
+		}
+
+		err := err.(*ProxyQuickActionErr)
+		if string(err.ctx.Payload.Type()) == eventType && err.ctx.Command == command {
+			currentArgumentsJSON, _ := json.Marshal(err.ctx.Arguments)
+			if string(currentArgumentsJSON) == argumentsJSON {
+				errs = append(errs, err.Error())
+			}
+		}
+	}
+	return errs
+}
+
+// flattenErrors extract all errors from multiple.Error recursively.
+func flattenErrors(errs []error) []error {
+	var flatErrs []error
+	for _, err := range errs {
+		switch err := err.(type) {
+		case *multierror.Error:
+			flatErrs = append(flatErrs, flattenErrors(err.WrappedErrors())...)
+		case *ProxyQuickActionErr:
+			ctx := err.ctx
+			for _, err := range flattenErrors([]error{err.error}) {
+				flatErrs = append(flatErrs, &ProxyQuickActionErr{error: err, ctx: ctx})
+			}
+		default:
+			flatErrs = append(flatErrs, err)
+		}
+	}
+	return flatErrs
 }

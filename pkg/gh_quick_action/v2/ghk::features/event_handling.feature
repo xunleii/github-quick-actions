@@ -42,7 +42,7 @@ Feature: handle Github event
       | API request method | API request URL                                                           | API request payload |
       | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["hello_world"]     |
     And Github Quick Actions should handle command "/hello_world" for "issue_comment" event with arguments ["all","all 'n' everyone"] by sending these following requests
-      | API request method | API request URL                                                           | API request payload                   |
+      | API request method | API request URL                                                           | API request payload                              |
       | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["hello_world@all","hello_world@all-n-everyone"] |
 
   Scenario: should handle '/hello_world' with error

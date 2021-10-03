@@ -3,101 +3,73 @@ package gqa_scenario_context
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
-	"sync"
-	"unicode"
+
+	"github.com/google/go-github/v39/github"
+	"github.com/improbable-eng/go-httpwares"
+	"github.com/shurcooL/githubv4"
+	"golang.org/x/oauth2"
 
 	gh_quick_actions "xnku.be/github-quick-actions/pkg/gh_quick_action/v2"
 )
 
 type (
-	// ProxyQuickAction is a sort of middleware for quick actions. It intercepts
-	// all commands to a specific quick action and saves errors and responses
-	// in order to use them lately.
+	// ProxyQuickAction injects some information on context in order to get
+	// information on server side.
 	ProxyQuickAction struct {
 		gh_quick_actions.QuickAction
-
-		called   int
-		proxies  map[string]*ProxiesCommand
-		scenario *QuickActionScenarioContext
-		mx       sync.Mutex
+		client *http.Client
 	}
 
-	ProxiesCommand struct {
-		Requests []*ProxyRoundTripper
-		Errors   []string
+	ProxyQuickActionErr struct {
+		error
+		ctx *gh_quick_actions.EventCommand
 	}
 )
 
-func (action *ProxyQuickAction) HandleCommand(ctx *gh_quick_actions.EventContext, command *gh_quick_actions.EventCommand) error {
-	action.mx.Lock()
-	defer action.mx.Unlock()
-	if action.proxies == nil {
-		action.proxies = map[string]*ProxiesCommand{}
-	}
+const (
+	EventHeader   string = "QuickAction-EventType"
+	CommandHeader string = "QuickAction-Command"
+	ArgsHeader    string = "QuickAction-Args"
+)
 
+func (action *ProxyQuickAction) HandleCommand(ctx *gh_quick_actions.EventContext, command *gh_quick_actions.EventCommand) error {
 	// NOTE: arguments are converted into JSON in order to easily access from Gherkin rules
 	jsonArgs, _ := json.Marshal(command.Arguments)
-	if action.proxies[string(jsonArgs)] == nil {
-		action.proxies[string(jsonArgs)] = &ProxiesCommand{}
-	}
-	proxy := action.proxies[string(jsonArgs)]
 
-	roundTripper := action.scenario.sharedProxy.Copy()
-	proxy.Requests = append(proxy.Requests, roundTripper)
-	ctx.ClientCreator = &ClientCreator{roundTripper}
+	// Use custom tripperware for the current client
+	client := httpwares.WrapClient(action.client, func(next http.RoundTripper) http.RoundTripper {
+		return httpwares.RoundTripperFunc(func(req *http.Request) (*http.Response, error) {
+			req.Header.Add(EventHeader, string(command.Payload.Type()))
+			req.Header.Add(CommandHeader, command.Command)
+			req.Header.Add(ArgsHeader, string(jsonArgs))
 
-	action.called++
+			return next.RoundTrip(req)
+		})
+	})
+
+	// Prepare the EventContext
+	ctx.ClientCreator = &ClientCreator{client}
+	_, _ = client.Get("quick-action://localhost/triggered")
+
 	err := action.QuickAction.HandleCommand(ctx, command)
 	if err != nil {
-		strErr := strings.Map(func(r rune) rune {
-			switch {
-			case unicode.IsSpace(r): // NOTE: replace all \t, \n ... with simple space
-				return ' '
-			default:
-				return r
-			}
-		}, err.Error())
-
-		proxy.Errors = append(proxy.Errors, strings.TrimSpace(strErr))
+		return &ProxyQuickActionErr{
+			error: err,
+			ctx:   command,
+		}
 	}
-
-	return err
+	return nil
 }
 
-// InterceptedRequests returns all intercepted http.Request for the given
-// command and method/url combo.
-func (action *ProxyQuickAction) InterceptedRequests(arguments, method, url string) []*http.Request {
-	interceptedCmd := action.interceptedCommand(arguments)
-	if interceptedCmd == nil {
-		return nil
-	}
 
-	var requests []*http.Request
-	for _, roundTripper := range interceptedCmd.Requests {
-		requests = append(requests, roundTripper.InterceptedRequests(method, url)...)
-	}
+type ClientCreator struct{ *http.Client }
 
-	return requests
-}
+func (cc *ClientCreator) NewAppClient() (*github.Client, error) 							 { return github.NewClient(cc.Client), nil }
+func (cc *ClientCreator) NewInstallationClient(installationID int64) (*github.Client, error) { return cc.NewAppClient() }
+func (cc *ClientCreator) NewTokenSourceClient(ts oauth2.TokenSource) (*github.Client, error) { return cc.NewAppClient() }
+func (cc *ClientCreator) NewTokenClient(token string) (*github.Client, error) 				 { return cc.NewAppClient() }
 
-// InterceptedErrors returns all intercepted errors for the given command.
-func (action *ProxyQuickAction) InterceptedErrors(arguments string) []string {
-	interceptedCmd := action.interceptedCommand(arguments)
-	if interceptedCmd == nil {
-		return nil
-	}
-
-	return interceptedCmd.Errors
-}
-
-func (action *ProxyQuickAction) interceptedCommand(arguments string) *ProxiesCommand {
-	if action.proxies == nil {
-		return nil
-	}
-
-	if action.proxies[arguments] == nil {
-		return nil
-	}
-	return action.proxies[arguments]
-}
+func (cc *ClientCreator) NewAppV4Client() (*githubv4.Client, error) 							 { panic("not implemented") }
+func (cc *ClientCreator) NewInstallationV4Client(installationID int64) (*githubv4.Client, error) { panic("not implemented") }
+func (cc *ClientCreator) NewTokenSourceV4Client(ts oauth2.TokenSource) (*githubv4.Client, error) { panic("not implemented") }
+func (cc *ClientCreator) NewTokenV4Client(token string) (*githubv4.Client, error) 				 { panic("not implemented") }
