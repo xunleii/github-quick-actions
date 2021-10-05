@@ -20,7 +20,7 @@ require (
 	github.com/shurcooL/githubv4 v0.0.0-20210922025249-6831e00d857f
 	github.com/stretchr/testify v1.7.0
 	github.com/thoas/go-funk v0.9.1
-	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
+	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
 )
 
 require (
