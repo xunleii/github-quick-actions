@@ -19,11 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@1b37538d9c22dd3f3d0c52992fa20da98683bd34 # renovate: tag=v1.0.15
+        uses: github/codeql-action/init@fd3190bba58b65cbefb742009518a03a07af24d7 # renovate: tag=v1.0.18
       - name: Autobuild
-        uses: github/codeql-action/autobuild@1b37538d9c22dd3f3d0c52992fa20da98683bd34 # renovate: tag=v1.0.15
+        uses: github/codeql-action/autobuild@fd3190bba58b65cbefb742009518a03a07af24d7 # renovate: tag=v1.0.18
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@1b37538d9c22dd3f3d0c52992fa20da98683bd34 # renovate: tag=v1.0.15
+        uses: github/codeql-action/analyze@fd3190bba58b65cbefb742009518a03a07af24d7 # renovate: tag=v1.0.18
         continue-on-error: true
       - name: Unlabel 'security:CodeQL'
         uses: actions/github-script@441359b1a30438de65712c2fbca0abe4816fa667 # renovate: tag=v5.0.0
