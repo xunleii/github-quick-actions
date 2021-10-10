@@ -1,0 +1,48 @@
+name: Suggest new quick action
+description: Suggest a new quick action to implement
+title: "Add quick action `/...`"
+labels: ["kind/enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new quick action!
+
+  - type: input
+    id: quick_action
+    attributes:
+      label: Quick Action command
+      description: The command and parameters of your quick action (use coma if you want to provide aliases).
+      placeholder: /action param01 [opt_param02], /alias param01 [opt_param02]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: on-event
+    attribute:
+      label: On Event
+      description: Where your quick action should be used?
+      multiple: true
+      options:
+        - Issue description
+        - Issue comment
+        - Pull request description
+        - Pull request comment
+        - Pull request review comment
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Explain what this new quick action will do.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](CONTRIBUTING.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
