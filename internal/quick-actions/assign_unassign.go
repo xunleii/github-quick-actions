@@ -61,7 +61,14 @@ func (qa UnassignQuickAction) HandleCommand(ctx *EventContext, command *EventCom
 
 	logger.Info().Msgf("handle `/unassign` (args: %v)", command.Arguments)
 
-	assignees := qa.getAssignees(command)
+	var assignees []string
+	if len(command.Arguments) == 0 {
+		// NOTE: if no argument are used with /unassign, fetch all assignees
+		assignees = qa.getExistingAssignees(command)
+	} else {
+		assignees = qa.getAssignees(command)
+	}
+
 	if len(assignees) == 0 {
 		logger.Debug().Msgf("no assignees found; ignored")
 		return nil
@@ -86,6 +93,26 @@ func (qa UnassignQuickAction) HandleCommand(ctx *EventContext, command *EventCom
 func (assigneesHelper) TriggerOnEvents() []EventType {
 	// NOTE: all assignments should be triggered on comment
 	return []EventType{EventTypeIssueComment, EventTypePullRequestReviewComment}
+}
+func (assigneesHelper) getExistingAssignees(command *EventCommand) []string {
+	var ghAssignees []*github.User
+	switch event := command.Payload.Raw().(type) {
+	case *github.IssuesEvent:
+		ghAssignees = event.GetIssue().Assignees
+	case *github.IssueCommentEvent:
+		ghAssignees = event.GetIssue().Assignees
+	case *github.PullRequestEvent:
+		ghAssignees = event.GetPullRequest().Assignees
+	case *github.PullRequestReviewCommentEvent:
+		ghAssignees = event.GetPullRequest().Assignees
+	}
+
+	var assignees []string
+	for _, assignee := range ghAssignees {
+		assignees = append(assignees, assignee.GetLogin())
+	}
+
+	return assignees
 }
 func (assigneesHelper) getAssignees(command *EventCommand) []string {
 	var author string

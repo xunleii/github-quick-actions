@@ -78,6 +78,24 @@ func TestAssigneesHelper_getAssignees(t *testing.T) {
 	}
 }
 
+func TestAssigneesHelper_getExistingAssignees(t *testing.T) {
+	noErr := func(e EventPayload, _ error) EventPayload { return e }
+
+	payloads := []EventPayload{
+		noErr(PayloadFactory(EventTypeIssue, []byte(`{"issue": {"assignees": [{"login": "mojombo"}, {"login": "defunkt"}]}}`))),
+		noErr(PayloadFactory(EventTypeIssueComment, []byte(`{"issue": {"assignees": [{"login": "mojombo"}, {"login": "defunkt"}]}}`))),
+		noErr(PayloadFactory(EventTypePullRequest, []byte(`{"pull_request": {"assignees": [{"login": "mojombo"}, {"login": "defunkt"}]}}`))),
+		noErr(PayloadFactory(EventTypePullRequestReviewComment, []byte(`{"pull_request": {"assignees": [{"login": "mojombo"}, {"login": "defunkt"}]}}`))),
+	}
+
+	for _, payload := range payloads {
+		t.Run(string(payload.Type()), func(t *testing.T) {
+			assignees := assigneesHelper{}.getExistingAssignees(&EventCommand{Payload: payload})
+			assert.ElementsMatch(t, assignees, []string{"mojombo", "defunkt"})
+		})
+	}
+}
+
 func TestAssign_TriggerOnEvents(t *testing.T) {
 	assert.ElementsMatch(t,
 		[]EventType{EventTypeIssue, EventTypeIssueComment, EventTypePullRequest, EventTypePullRequestReviewComment},
