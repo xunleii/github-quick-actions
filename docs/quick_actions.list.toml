@@ -35,7 +35,12 @@ _Use `me` to remove yourself._
 
 [[quick_actions.released]]
 quick_action = [ "/label ~label [~label...]" ]
-on_events = [ "issue_comment" ]
+on_events = [
+  "issue",
+  "issue_comment",
+  "pull_request",
+  "pull_request_review_comment"
+]
 description = """
 Add one or more labels.
 _Label names can also start without a tilde (`~`)._
@@ -43,7 +48,10 @@ _Label names can also start without a tilde (`~`)._
 
 [[quick_actions.released]]
 quick_action = [ "/unlabel", "/remove_label" ]
-on_events = [ "issue_comment" ]
+on_events = [
+  "issue_comment",
+  "pull_request_review_comment"
+]
 description = """
 Remove specified labels.
 _Label names can also start without a tilde (`~`)._
@@ -54,7 +62,10 @@ quick_action = [
   "/unlabel ~label [~label...]",
   "/remove_label ~label [~label...]"
 ]
-on_events = [ "issue_comment" ]
+on_events = [
+  "issue_comment",
+  "pull_request_review_comment"
+]
 description = "Remove all labels."
 
 
@@ -82,18 +93,6 @@ on_events = [
 description = "Remove all assignees."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/label ~label [~label...]" ]
-on_events = [
-  "issue",
-  "pull_request",
-  "pull_request_review_comment"
-]
-description = """
-Add one or more labels.
-_Label names can also start without a tilde (`~`)._
-"""
-
-[[quick_actions.next_releases]]
 quick_action = [ "/relabel ~label [~label...]" ]
 on_events = [
   "issue_comment",
@@ -102,28 +101,6 @@ on_events = [
 ]
 description = """
 Replace current labels with those specified.
-_Label names can also start without a tilde (`~`)._
-"""
-
-[[quick_actions.next_releases]]
-quick_action = [
-  "/unlabel ~label [~label...]",
-  "/remove_label ~label [~label...]"
-]
-on_events = [
-  "pull_request",
-  "pull_request_review_comment"
-]
-description = "Remove all labels."
-
-[[quick_actions.next_releases]]
-quick_action = [ "/unlabel", "/remove_label" ]
-on_events = [
-  "pull_request",
-  "pull_request_review_comment"
-]
-description = """
-Remove specified labels.
 _Label names can also start without a tilde (`~`)._
 """
 
