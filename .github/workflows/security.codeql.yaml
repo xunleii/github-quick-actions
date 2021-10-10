@@ -27,6 +27,6 @@ jobs:
         continue-on-error: true
       - name: Unlabel 'security:CodeQL'
         if: ${{ github.event.label.name == 'security:CodeQL' }}
-        uses: actions-ecosystem/action-remove-labels@2ce5d41b4b6aa8503e285553f75ed56e0a40bae0 # renovate: tags=v1.3.0
+        uses: actions-ecosystem/action-remove-labels@2ce5d41b4b6aa8503e285553f75ed56e0a40bae0
         with:
           labels: 'security:CodeQL'
