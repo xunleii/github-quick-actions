@@ -1,6 +1,7 @@
 package quick_actions
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/cucumber/godog"
@@ -68,18 +69,24 @@ func TestLabel_TriggerOnEvents(t *testing.T) {
 }
 
 func TestLabelFeature(t *testing.T) {
-	suite := godog.TestSuite{
-		ScenarioInitializer: gqa_scenario_context.ScenarioInitializer(map[string]QuickAction{"label": &LabelQuickAction{}}),
-		Options: &godog.Options{
-			Format:   "pretty",
-			Paths:    []string{"ghk::features"},
-			Tags:     "label",
-			TestingT: t,
-		},
-	}
+	events := LabelQuickAction{}.TriggerOnEvents()
 
-	if suite.Run() != 0 {
-		t.Fatal("non-zero status returned, failed to run feature tests")
+	for _, event := range events {
+		t.Run(string(event), func(t *testing.T) {
+			suite := godog.TestSuite{
+				ScenarioInitializer: gqa_scenario_context.ScenarioInitializer(map[string]QuickAction{"label": &LabelQuickAction{}}),
+				Options: &godog.Options{
+					Format:   "pretty",
+					Paths:    []string{"ghk::features"},
+					Tags:     fmt.Sprintf("label && %s", event),
+					TestingT: t,
+				},
+			}
+
+			if suite.Run() != 0 {
+				t.Fatal("non-zero status returned, failed to run feature tests")
+			}
+		})
 	}
 }
 
