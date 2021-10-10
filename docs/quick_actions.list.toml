@@ -10,12 +10,12 @@
 # -----------------------------------------------------------------------------
 
 [[quick_actions.released]]
-quick_action = [ "/assign @user [@user...]" ]
+quick_action = ["/assign @user [@user...]"]
 on_events = [
   "issue",
   "issue_comment",
   "pull_request",
-  "pull_request_review_comment"
+  "pull_request_review_comment",
 ]
 description = """
 Assign one or more users.
@@ -23,23 +23,20 @@ _Use `me` to assign yourself._
 """
 
 [[quick_actions.released]]
-quick_action = [ "/unassign @user [@user...]" ]
-on_events = [
-  "issue_comment",
-  "pull_request_review_comment"
-]
+quick_action = ["/unassign @user [@user...]"]
+on_events = ["issue_comment", "pull_request_review_comment"]
 description = """
 Remove one or more assignees.
 _Use `me` to remove yourself._
 """
 
 [[quick_actions.released]]
-quick_action = [ "/label ~label [~label...]" ]
+quick_action = ["/label ~label [~label...]"]
 on_events = [
   "issue",
   "issue_comment",
   "pull_request",
-  "pull_request_review_comment"
+  "pull_request_review_comment",
 ]
 description = """
 Add one or more labels.
@@ -47,11 +44,8 @@ _Label names can also start without a tilde (`~`)._
 """
 
 [[quick_actions.released]]
-quick_action = [ "/unlabel", "/remove_label" ]
-on_events = [
-  "issue_comment",
-  "pull_request_review_comment"
-]
+quick_action = ["/unlabel", "/remove_label"]
+on_events = ["issue_comment", "pull_request_review_comment"]
 description = """
 Remove specified labels.
 _Label names can also start without a tilde (`~`)._
@@ -60,12 +54,9 @@ _Label names can also start without a tilde (`~`)._
 [[quick_actions.released]]
 quick_action = [
   "/unlabel ~label [~label...]",
-  "/remove_label ~label [~label...]"
+  "/remove_label ~label [~label...]",
 ]
-on_events = [
-  "issue_comment",
-  "pull_request_review_comment"
-]
+on_events = ["issue_comment", "pull_request_review_comment"]
 description = "Remove all labels."
 
 
@@ -73,109 +64,78 @@ description = "Remove all labels."
 # -----------------------------------------------------------------------------
 
 [[quick_actions.next_releases]]
-quick_action = [ "/reassign @user [@user...]" ]
-on_events = [
-  "issue_comment",
-  "pull_request",
-  "pull_request_review_comment"
-]
+quick_action = ["/reassign @user [@user...]"]
+on_events = ["issue_comment", "pull_request_review_comment"]
 description = """
 Replace current assignees with those specified.
 _Use `me` to assign yourself._
 """
 
 [[quick_actions.next_releases]]
-quick_action = [ "/unassign", "/remove_assignees" ]
-on_events = [
-  "pull_request",
-  "pull_request_review_comment"
-]
+quick_action = ["/unassign", "/remove_assignees"]
+on_events = ["issue_comment", "pull_request_review_comment"]
 description = "Remove all assignees."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/relabel ~label [~label...]" ]
-on_events = [
-  "issue_comment",
-  "pull_request",
-  "pull_request_review_comment"
-]
+quick_action = ["/relabel ~label [~label...]"]
+on_events = ["issue_comment", "pull_request_review_comment"]
 description = """
 Replace current labels with those specified.
 _Label names can also start without a tilde (`~`)._
 """
 
 [[quick_actions.next_releases]]
-quick_action = [ "/assign_reviewer @user [@user ...]" ]
-on_events = [
-  "issue_comment",
-  "pull_request",
-  "pull_request_review_comment"
-]
+quick_action = ["/assign_reviewer @user [@user ...]"]
+on_events = ["issue_comment", "pull_request", "pull_request_review_comment"]
 description = """
 Assign one or more users as reviewers.
 _Use `me` to assign yourself._
 """
 
 [[quick_actions.next_releases]]
-quick_action = [ "/reassign_reviewer @user [@user ...]" ]
-on_events = [
-  "issue_comment",
-  "pull_request",
-  "pull_request_review_comment"
-]
+quick_action = ["/reassign_reviewer @user [@user ...]"]
+on_events = ["issue_comment", "pull_request_review_comment"]
 description = """
 Replace current reviewers with those specified.
 _Use `me` to assign yourself._
 """
 
 [[quick_actions.next_releases]]
-quick_action = [ "/unassign_reviewer @user [@user ...]" ]
-on_events = [
-  "issue_comment",
-  "pull_request",
-  "pull_request_review_comment"
-]
+quick_action = ["/unassign_reviewer @user [@user ...]"]
+on_events = ["issue_comment", "pull_request_review_comment"]
 description = """
 Remove specified reviewers.
 _Use `me` to remove yourself._
 """
 
 [[quick_actions.next_releases]]
-quick_action = [ "/unassign_reviewer", "/remove_reviewer" ]
-on_events = [
-  "issue_comment",
-  "pull_request",
-  "pull_request_review_comment"
-]
+quick_action = ["/unassign_reviewer", "/remove_reviewer"]
+on_events = ["issue_comment", "pull_request_review_comment"]
 description = "Remove all reviewers."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/draft" ]
-on_events = [
-  "issue_comment",
-  "pull_request",
-  "pull_request_review_comment"
-]
+quick_action = ["/draft"]
+on_events = ["issue_comment", "pull_request", "pull_request_review_comment"]
 description = "Toggle the draft status."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/reopen" ]
-on_events = [ "issue_comment" ]
+quick_action = ["/reopen"]
+on_events = ["issue_comment"]
 description = "Reopen the current issue or pull request."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/close" ]
-on_events = [ "issue_comment" ]
+quick_action = ["/close"]
+on_events = ["issue_comment"]
 description = "Close the current issue or pull request."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/merge" ]
-on_events = [ "issue_comment" ]
+quick_action = ["/merge"]
+on_events = ["issue_comment"]
 description = "Merge the current pull request."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/copy_metadata #issue field [field...]" ]
-on_events = [ "issue", "issue_comment", "pull_request" ]
+quick_action = ["/copy_metadata #issue field [field...]"]
+on_events = ["issue", "issue_comment", "pull_request"]
 description = """
 Copy specified metadata from another issue or pull request.
 _Available metadata are: assignees, reviewers, labels,
@@ -183,79 +143,82 @@ project, milestones, related_issues and related_pull_requests_
 """
 
 [[quick_actions.next_releases]]
-quick_action = [ "/copy_metadata #issue" ]
-on_events = [ "issue", "issue_comment", "pull_request" ]
+quick_action = ["/copy_metadata #issue"]
+on_events = ["issue", "issue_comment", "pull_request"]
 description = "Copy all metadata from another issue or pull request."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/create_pull_request branch_name" ]
-on_events = [ "issue_comment" ]
+quick_action = ["/create_pull_request branch_name"]
+on_events = ["issue_comment"]
 description = """
 Create a new merge request starting from the current issue.
 _It will automatically link the current issue with the new PR_
 """
 
 [[quick_actions.next_releases]]
-quick_action = [ "/duplicate #issue" ]
-on_events = [ "issue_comment", "pull_request" ]
+quick_action = ["/duplicate #issue"]
+on_events = ["issue_comment", "pull_request_review_comment"]
 description = "Close this issue and mark as a duplicate of another issue."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/milestone %milestone" ]
-on_events = [ "issue", "issue_comment", "pull_request" ]
+quick_action = ["/milestone %milestone"]
+on_events = ["issue", "issue_comment", "pull_request"]
 description = "Set milestone."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/relate #issue [#issue...]" ]
-on_events = [ "issue", "issue_comment", "pull_request" ]
+quick_action = ["/relate #issue [#issue...]"]
+on_events = [
+  "issue",
+  "issue_comment",
+  "pull_request",
+  "pull_request_review_comment",
+]
 description = "Mark issues as related."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/target_branch branch_name" ]
-on_events = [ "issue_comment" ]
+quick_action = ["/target_branch branch_name"]
+on_events = ["issue_comment"]
 description = "Set target branch."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/title new_title" ]
-on_events = [ "issue_comment", "pull_request" ]
+quick_action = ["/title new_title"]
+on_events = ["issue_comment", "pull_request"]
 description = "Change title."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/submit_review @user [@user...]" ]
-on_events = [ "issue_comment" ]
+quick_action = ["/submit_review @user [@user...]"]
+on_events = ["issue_comment"]
 description = "Submit a pending review to specified reviewers."
 
 [[quick_actions.next_releases]]
-quick_action = [ "/submit_review" ]
-on_events = [ "issue_comment" ]
+quick_action = ["/submit_review"]
+on_events = ["issue_comment"]
 description = "Submit a pending review to all reviewers."
 
 # Quick actions that was rejected, and why
 # -----------------------------------------------------------------------------
 
 [[quick_actions.rejected]]
-quick_action = [ "/subscribe" ]
+quick_action = ["/subscribe"]
 description = "Subscribe to notifications."
 reasons = [
-  "Github App needs access to a user information and ability to modify them"
+  "Github App needs access to a user information and ability to modify them",
 ]
 
 [[quick_actions.rejected]]
-quick_action = [ "/unsubscribe" ]
+quick_action = ["/unsubscribe"]
 description = "Unsubscribe from notifications."
 reasons = [
-  "Github App needs access to a user information and ability to modify them"
+  "Github App needs access to a user information and ability to modify them",
 ]
 
 [[quick_actions.rejected]]
-quick_action = [ "/approve" ]
+quick_action = ["/approve"]
 description = "Approve the merge request or the review."
-reasons = [
-  "Github App needs access to a user information and impersonate them"
-]
+reasons = ["Github App needs access to a user information and impersonate them"]
 
 [[quick_actions.rejected]]
-quick_action = [ "/rebase" ]
+quick_action = ["/rebase"]
 description = """
 Rebase source branch.
 This schedules a background task that attempts to rebase the changes in the source branch on the latest commit of the target branch.
@@ -265,5 +228,5 @@ Rebase failures are displayed with the merge request status.
 """
 reasons = [
   "Cost too much to implement and to execute; alternative exists like using GithubAction with specific labels",
-  "Could have impact on the PR content"
+  "Could have impact on the PR content",
 ]
