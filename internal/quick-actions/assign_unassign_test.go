@@ -10,15 +10,14 @@ import (
 	gqa_scenario_context "xnku.be/github-quick-actions/pkg/ghk_scenario_ctx"
 )
 
-func TestAssigneesHelper_TriggerOnEvents(t *testing.T) {
-	assert.ElementsMatch(t, []EventType{EventTypeIssueComment}, assigneesHelper{}.TriggerOnEvents())
-}
-
 func TestAssigneesHelper_getAssignees(t *testing.T) {
 	noErr := func(e EventPayload, _ error) EventPayload { return e }
 
 	payloads := []EventPayload{
+		noErr(PayloadFactory(EventTypeIssue, []byte(`{"issue":{"user":{"login":"xunleii"}}}`))),
 		noErr(PayloadFactory(EventTypeIssueComment, []byte(`{"comment":{"user":{"login":"xunleii"}}}`))),
+		noErr(PayloadFactory(EventTypePullRequest, []byte(`{"pull_request":{"user":{"login":"xunleii"}}}`))),
+		noErr(PayloadFactory(EventTypePullRequestReviewComment, []byte(`{"comment":{"user":{"login":"xunleii"}}}`))),
 	}
 
 	ts := map[string]struct {
@@ -78,6 +77,13 @@ func TestAssigneesHelper_getAssignees(t *testing.T) {
 	}
 }
 
+func TestAssign_TriggerOnEvents(t *testing.T) {
+	assert.ElementsMatch(t,
+		[]EventType{EventTypeIssue, EventTypeIssueComment, EventTypePullRequest, EventTypePullRequestReviewComment},
+		AssignQuickAction{}.TriggerOnEvents(),
+	)
+}
+
 func TestAssignFeature(t *testing.T) {
 	suite := godog.TestSuite{
 		ScenarioInitializer: gqa_scenario_context.ScenarioInitializer(map[string]QuickAction{"assign": &AssignQuickAction{}}),
@@ -92,6 +98,13 @@ func TestAssignFeature(t *testing.T) {
 	if suite.Run() != 0 {
 		t.Fatal("non-zero status returned, failed to run feature tests")
 	}
+}
+
+func TestUnassign_TriggerOnEvents(t *testing.T) {
+	assert.ElementsMatch(t,
+		[]EventType{EventTypeIssueComment, EventTypePullRequestReviewComment},
+		UnassignQuickAction{}.TriggerOnEvents(),
+	)
 }
 
 func TestUnassignFeature(t *testing.T) {

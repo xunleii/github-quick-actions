@@ -21,6 +21,10 @@ type (
 	UnassignQuickAction struct{ assigneesHelper }
 )
 
+func (qa AssignQuickAction) TriggerOnEvents() []EventType {
+	// NOTE: assign should be triggered on issues & pull requests description
+	return []EventType{EventTypeIssue, EventTypeIssueComment, EventTypePullRequest, EventTypePullRequestReviewComment}
+}
 func (qa AssignQuickAction) HandleCommand(ctx *EventContext, command *EventCommand) error {
 	logger := zerolog.Ctx(ctx).With().
 		Str("quick_action", "assign").
@@ -79,11 +83,20 @@ func (qa UnassignQuickAction) HandleCommand(ctx *EventContext, command *EventCom
 	return err
 }
 
-func (assigneesHelper) TriggerOnEvents() []EventType { return []EventType{EventTypeIssueComment} }
+func (assigneesHelper) TriggerOnEvents() []EventType {
+	// NOTE: all assignments should be triggered on comment
+	return []EventType{EventTypeIssueComment, EventTypePullRequestReviewComment}
+}
 func (assigneesHelper) getAssignees(command *EventCommand) []string {
 	var author string
 	switch event := command.Payload.Raw().(type) {
+	case *github.IssuesEvent:
+		author = event.GetIssue().GetUser().GetLogin()
 	case *github.IssueCommentEvent:
+		author = event.GetComment().GetUser().GetLogin()
+	case *github.PullRequestEvent:
+		author = event.GetPullRequest().GetUser().GetLogin()
+	case *github.PullRequestReviewCommentEvent:
 		author = event.GetComment().GetUser().GetLogin()
 	}
 
