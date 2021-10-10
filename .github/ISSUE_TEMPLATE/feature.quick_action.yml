@@ -17,18 +17,17 @@ body:
     validations:
       required: true
 
-  - type: dropdown
+  - type: checkboxes
     id: on-event
     attributes:
-      label: On Event
+      label: On events
       description: Where your quick action should be used?
-      multiple: true
       options:
-        - Issue description
-        - Issue comment
-        - Pull request description
-        - Pull request comment
-        - Pull request review comment
+        - label: Issue description (issue)
+        - label: Issue comment (issue_comment)
+        - label: Pull request description (pull_request)
+        - label: Pull request comment (issue_comment)
+        - label: Pull request review comment (pull_request_review_comment)
     validations:
       required: true
 
