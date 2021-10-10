@@ -117,7 +117,7 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment
     Then Github Quick Actions should handle command "/unassign" for "issue_comment" event with arguments ["mojombo"] without sending anything
 
   @unassign
-  Scenario: /unassign without argument
+  Scenario: /unassign all assignees
     When Github sends an event "issue_comment" with
       """
       {
@@ -127,11 +127,16 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "issue": { "number": 1 },
+        "issue": {
+          "assignees": [{"login": "mojombo"}, {"login": "defunkt"}],
+          "number": 1
+        },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event without argument without sending anything
+    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event without argument by sending these following requests
+      | API request method | API request URL                                                              | API request payload                  |
+      | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo", "defunkt"]} |
 
   @unassign
   Scenario: /unassign me on an invalid repository

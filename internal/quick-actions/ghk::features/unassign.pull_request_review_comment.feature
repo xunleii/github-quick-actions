@@ -117,7 +117,7 @@ Feature: unassign someone with /unassign @user [@user...] on pull request review
     Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event with arguments ["mojombo"] without sending anything
 
   @unassign
-  Scenario: /unassign without argument
+  Scenario: /unassign all assignees
     When Github sends an event "pull_request_review_comment" with
       """
       {
@@ -127,11 +127,16 @@ Feature: unassign someone with /unassign @user [@user...] on pull request review
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "pull_request": { "number": 1 },
+        "pull_request": {
+          "assignees": [{"login": "mojombo"}, {"login": "defunkt"}],
+          "number": 1
+        },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event without argument without sending anything
+    Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event without argument by sending these following requests
+      | API request method | API request URL                                                              | API request payload                  |
+      | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo", "defunkt"]} |
 
   @unassign
   Scenario: /unassign me on an invalid repository
