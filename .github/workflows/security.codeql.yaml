@@ -4,13 +4,13 @@ on:
   pull_request:
     types: [labeled]
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   code_ql:
     name: CodeQL analysis
     runs-on: ubuntu-latest
-    if: ${{ github.event.label.name == 'security:CodeQL' }}
+    if: ${{ github.event_name == 'push' || github.event.label.name == 'security:CodeQL' }}
     permissions:
       actions: read
       contents: read
@@ -26,12 +26,7 @@ jobs:
         uses: github/codeql-action/analyze@fd3190bba58b65cbefb742009518a03a07af24d7 # renovate: tag=v1.0.18
         continue-on-error: true
       - name: Unlabel 'security:CodeQL'
-        uses: actions/github-script@441359b1a30438de65712c2fbca0abe4816fa667 # renovate: tag=v5.0.0
+        if: ${{ github.event.label.name == 'security:CodeQL' }}
+        uses: actions-ecosystem/action-remove-labels@2ce5d41b4b6aa8503e285553f75ed56e0a40bae0 # renovate: tags=v1.3.0
         with:
-          script: |
-            github.issues.removeLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              name: 'security:CodeQL'
-            })
+          labels: 'security:CodeQL'
