@@ -10,10 +10,6 @@ import (
 	gqa_scenario_context "xnku.be/github-quick-actions/pkg/ghk_scenario_ctx"
 )
 
-func TestLabelsHelper_TriggerOnEvents(t *testing.T) {
-	assert.ElementsMatch(t, []EventType{EventTypeIssueComment}, assigneesHelper{}.TriggerOnEvents())
-}
-
 func TestLabelsHelper_getLabels(t *testing.T) {
 	ts := map[string]struct {
 		command EventCommand
@@ -64,6 +60,13 @@ func TestLabelsHelper_getLabels(t *testing.T) {
 	}
 }
 
+func TestLabel_TriggerOnEvents(t *testing.T) {
+	assert.ElementsMatch(t,
+		[]EventType{EventTypeIssue, EventTypeIssueComment, EventTypePullRequest, EventTypePullRequestReviewComment},
+		LabelQuickAction{}.TriggerOnEvents(),
+	)
+}
+
 func TestLabelFeature(t *testing.T) {
 	suite := godog.TestSuite{
 		ScenarioInitializer: gqa_scenario_context.ScenarioInitializer(map[string]QuickAction{"label": &LabelQuickAction{}}),
@@ -78,6 +81,13 @@ func TestLabelFeature(t *testing.T) {
 	if suite.Run() != 0 {
 		t.Fatal("non-zero status returned, failed to run feature tests")
 	}
+}
+
+func TestUnlabel_TriggerOnEvents(t *testing.T) {
+	assert.ElementsMatch(t,
+		[]EventType{EventTypeIssueComment, EventTypePullRequestReviewComment},
+		UnlabelQuickAction{}.TriggerOnEvents(),
+	)
 }
 
 func TestUnlabelFeature(t *testing.T) {
