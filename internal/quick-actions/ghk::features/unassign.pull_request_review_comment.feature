@@ -1,12 +1,12 @@
-@issue_comment
-Feature: unassign someone with /unassign @user [@user...] on issue comment
+@pull_request_review_comment
+Feature: unassign someone with /unassign @user [@user...] on pull request review comment
 
   Background:
-    Given quick action "/unassign" is registered for "issue_comment" events
+    Given quick action "/unassign" is registered for "pull_request_review_comment" events
 
   @unassign
   Scenario: /unassign @mojombo
-    When Github sends an event "issue_comment" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
@@ -15,17 +15,17 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "issue": { "number": 1 },
+        "pull_request": { "number": 1 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event with arguments ["@mojombo"] by sending these following requests
+    Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event with arguments ["@mojombo"] by sending these following requests
       | API request method | API request URL                                                              | API request payload       |
       | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo"]} |
 
   @unassign
   Scenario: /unassign @mojombo @defunkt
-    When Github sends an event "issue_comment" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
@@ -34,17 +34,17 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "issue": { "number": 1 },
+        "pull_request": { "number": 1 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event with arguments ["@mojombo","@defunkt"] by sending these following requests
+    Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event with arguments ["@mojombo","@defunkt"] by sending these following requests
       | API request method | API request URL                                                              | API request payload                  |
       | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo", "defunkt"]} |
 
   @unassign
   Scenario: /unassign me
-    When Github sends an event "issue_comment" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
@@ -53,17 +53,17 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "issue": { "number": 1 },
+        "pull_request": { "number": 1 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event with arguments ["me"] by sending these following requests
+    Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event with arguments ["me"] by sending these following requests
       | API request method | API request URL                                                              | API request payload       |
       | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["xunleii"]} |
 
   @unassign
   Scenario: /unassign @mojombo me
-    When Github sends an event "issue_comment" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
@@ -72,17 +72,17 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "issue": { "number": 1 },
+        "pull_request": { "number": 1 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event with arguments ["@mojombo","me"] by sending these following requests
+    Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event with arguments ["@mojombo","me"] by sending these following requests
       | API request method | API request URL                                                              | API request payload                  |
       | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo", "xunleii"]} |
 
   @unassign
   Scenario: /unassign @mojombo @mojombo
-    When Github sends an event "issue_comment" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
@@ -91,17 +91,17 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "issue": { "number": 1 },
+        "pull_request": { "number": 1 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event with arguments ["@mojombo","@mojombo"] by sending these following requests
+    Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event with arguments ["@mojombo","@mojombo"] by sending these following requests
       | API request method | API request URL                                                              | API request payload       |
       | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo"]} |
 
   @unassign
   Scenario: invalid /unassign mojombo
-    When Github sends an event "issue_comment" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
@@ -110,15 +110,15 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "issue": { "number": 1 },
+        "pull_request": { "number": 1 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event with arguments ["mojombo"] without sending anything
+    Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event with arguments ["mojombo"] without sending anything
 
   @unassign
   Scenario: /unassign without argument
-    When Github sends an event "issue_comment" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
@@ -127,16 +127,16 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "issue": { "number": 1 },
+        "pull_request": { "number": 1 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event without argument without sending anything
+    Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event without argument without sending anything
 
   @unassign
   Scenario: /unassign me on an invalid repository
     Given Github replies to 'DELETE https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees' with '404 {"message": "Not Found", "documentation_url": "https://docs.github.com/en/rest/reference/issues#add-labels-to-an-issue"}'
-    When Github sends an event "issue_comment" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
@@ -145,8 +145,8 @@ Feature: unassign someone with /unassign @user [@user...] on issue comment
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "issue": { "number": 1 },
+        "pull_request": { "number": 1 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/unassign" for "issue_comment" event with arguments ["me"] but returns this error: 'DELETE https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees: 404 Not Found []'
+    Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event with arguments ["me"] but returns this error: 'DELETE https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees: 404 Not Found []'
