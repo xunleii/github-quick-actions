@@ -67,6 +67,9 @@ func ScenarioInitializer(quickActions map[string]gh_quick_actions.QuickAction) f
 		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event without argument without sending anything$`, scenario.assertNoArgCommandTriggeredSuccessfullyWithoutRequest)
 		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event with arguments (\[.+\]) but returns this error: '(.+)'$`, scenario.assertCommandTriggeredWithError)
 		ctx.Step(`^Github Quick Actions should handle command "/([^"]+)" for "([^"]+)" event without argument but returns this error: '(.+)'$`, scenario.assertNoArgCommandTriggeredWithError)
+
+		// DEBUG steps
+		ctx.Step(`^\(debug\) Show all intercepted requests$`, scenario.showAllRequests)
 	}
 }
 
@@ -92,6 +95,22 @@ func (ctx *QuickActionScenarioContext) simulateGithubAPIReply(method, rawURL str
 		})
 	return nil
 }
+
+// showAllRequests returns all requests received by the Github API proxy
+func (ctx *QuickActionScenarioContext) showAllRequests() error {
+	var requests []string
+	for _, request := range ctx.ghAPIProxy.HandledRequests() {
+		payload := []byte("{}")
+		if request.Body != nil {
+			payload, _ = io.ReadAll(request.Body)
+		}
+
+		requests = append(requests, fmt.Sprintf("%s: %s", request.URL.String(), string(payload)))
+	}
+
+	return fmt.Errorf("API requests: %v", requests)
+}
+
 
 // assertNoQuickActionsCalled asserts that Github Quick Actions didn't use any
 // Quick Actions during the current scenario.
@@ -173,6 +192,13 @@ tableIterator:
 		expectedPayload := row.Cells[2].Value
 
 		for _, request := range requests.With(func(r APIRequest) bool { return r.IsGithubAPIRequest() }) {
+			if request.Method != method {
+				continue
+			}
+			if request.URL.String() != url {
+				continue
+			}
+
 			if request.Body == nil {
 				if expectedPayload == "" {
 					continue tableIterator
@@ -189,7 +215,7 @@ tableIterator:
 			}
 		}
 
-		errs = append(errs, fmt.Sprintf(`No valid payload found for request %s on "%s" for command "/%s" (with %s) on "%s" event`, method, url, command, argumentsJSON, eventType))
+		errs = append(errs, fmt.Sprintf(`No valid request %s on "%s" for command "/%s" (with %s) on "%s" event`, method, url, command, argumentsJSON, eventType))
 	}
 
 	switch len(errs) {
