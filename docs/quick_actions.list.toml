@@ -58,7 +58,6 @@ quick_action = [ "/assign @user [@user...]" ]
 on_events = [
   "issue",
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = """
@@ -71,7 +70,6 @@ quick_action = [ "/reassign @user [@user...]" ]
 on_events = [
   "issue_comment",
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = """
@@ -83,7 +81,6 @@ _Use `me` to assign yourself._
 quick_action = [ "/unassign @user [@user...]" ]
 on_events = [
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = """
@@ -95,7 +92,6 @@ _Use `me` to remove yourself._
 quick_action = [ "/unassign", "/remove_assignees" ]
 on_events = [
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = "Remove all assignees."
@@ -105,7 +101,6 @@ quick_action = [ "/label ~label [~label...]" ]
 on_events = [
   "issue",
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = """
@@ -118,7 +113,6 @@ quick_action = [ "/relabel ~label [~label...]" ]
 on_events = [
   "issue_comment",
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = """
@@ -133,7 +127,6 @@ quick_action = [
 ]
 on_events = [
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = "Remove all labels."
@@ -142,7 +135,6 @@ description = "Remove all labels."
 quick_action = [ "/unlabel", "/remove_label" ]
 on_events = [
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = """
@@ -155,7 +147,6 @@ quick_action = [ "/assign_reviewer @user [@user ...]" ]
 on_events = [
   "issue_comment",
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = """
@@ -168,7 +159,6 @@ quick_action = [ "/reassign_reviewer @user [@user ...]" ]
 on_events = [
   "issue_comment",
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = """
@@ -181,7 +171,6 @@ quick_action = [ "/unassign_reviewer @user [@user ...]" ]
 on_events = [
   "issue_comment",
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = """
@@ -194,7 +183,6 @@ quick_action = [ "/unassign_reviewer", "/remove_reviewer" ]
 on_events = [
   "issue_comment",
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = "Remove all reviewers."
@@ -204,7 +192,6 @@ quick_action = [ "/draft" ]
 on_events = [
   "issue_comment",
   "pull_request",
-  "pull_request_review",
   "pull_request_review_comment"
 ]
 description = "Toggle the draft status."
