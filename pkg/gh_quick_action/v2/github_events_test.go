@@ -11,6 +11,13 @@ import (
 )
 
 var (
+	issueEventFixture = &github.IssuesEvent{
+		Action: github.String("created"),
+		Repo:   &github.Repository{Name: github.String("github-quick-actions"), Owner: &github.User{Login: github.String("xunleii")}},
+		Issue:  &github.Issue{Body: github.String("..."), Number: github.Int(0)},
+	}
+	issueEventFixtureJSON, _ = json.Marshal(issueEventFixture)
+
 	issueCommentEventFixture = &github.IssueCommentEvent{
 		Action:  github.String("created"),
 		Repo:    &github.Repository{Name: github.String("github-quick-actions"), Owner: &github.User{Login: github.String("xunleii")}},
@@ -18,6 +25,21 @@ var (
 		Issue:   &github.Issue{Number: github.Int(0)},
 	}
 	issueCommentEventFixtureJSON, _ = json.Marshal(issueCommentEventFixture)
+
+	pullRequestEventFixture = &github.PullRequestEvent{
+		Action:      github.String("created"),
+		Repo:        &github.Repository{Name: github.String("github-quick-actions"), Owner: &github.User{Login: github.String("xunleii")}},
+		PullRequest: &github.PullRequest{Body: github.String("..."), Number: github.Int(0)},
+	}
+	pullRequestEventFixtureJSON, _ = json.Marshal(pullRequestEventFixture)
+
+	pullRequestReviewCommentEventFixture = &github.PullRequestReviewCommentEvent{
+		Action:      github.String("created"),
+		Repo:        &github.Repository{Name: github.String("github-quick-actions"), Owner: &github.User{Login: github.String("xunleii")}},
+		Comment:     &github.PullRequestComment{Body: github.String("...")},
+		PullRequest: &github.PullRequest{Number: github.Int(0)},
+	}
+	pullRequestReviewCommentEventFixtureJSON, _ = json.Marshal(pullRequestReviewCommentEventFixture)
 )
 
 func TestPayloadFactory(t *testing.T) {
@@ -35,6 +57,19 @@ func TestPayloadFactory(t *testing.T) {
 		},
 
 		{
+			name:            "github.IssueEvent",
+			eventType:       EventTypeIssue,
+			eventJSON:       issueEventFixtureJSON,
+			expectedPayload: mockEventPayload{EventTypeIssue, EventActionCreated, "github-quick-actions", "xunleii", 0, "..."},
+		},
+		{
+			name:      "github.IssueEvent@invalid",
+			eventType: EventTypeIssue,
+			eventJSON: []byte("...invalid..."),
+			err:       fmt.Errorf("failed to extract data from JSON for event 'issue': invalid character '.' looking for beginning of value"),
+		},
+
+		{
 			name:            "github.IssueCommentEvent",
 			eventType:       EventTypeIssueComment,
 			eventJSON:       issueCommentEventFixtureJSON,
@@ -45,6 +80,32 @@ func TestPayloadFactory(t *testing.T) {
 			eventType: EventTypeIssueComment,
 			eventJSON: []byte("...invalid..."),
 			err:       fmt.Errorf("failed to extract data from JSON for event 'issue_comment': invalid character '.' looking for beginning of value"),
+		},
+
+		{
+			name:            "github.PullRequestEvent",
+			eventType:       EventTypePullRequest,
+			eventJSON:       pullRequestEventFixtureJSON,
+			expectedPayload: mockEventPayload{EventTypePullRequest, EventActionCreated, "github-quick-actions", "xunleii", 0, "..."},
+		},
+		{
+			name:      "github.PullRequestEvent@invalid",
+			eventType: EventTypePullRequest,
+			eventJSON: []byte("...invalid..."),
+			err:       fmt.Errorf("failed to extract data from JSON for event 'pull_request': invalid character '.' looking for beginning of value"),
+		},
+
+		{
+			name:            "github.PullRequestReviewCommentEvent",
+			eventType:       EventTypePullRequestReviewComment,
+			eventJSON:       pullRequestReviewCommentEventFixtureJSON,
+			expectedPayload: mockEventPayload{EventTypePullRequestReviewComment, EventActionCreated, "github-quick-actions", "xunleii", 0, "..."},
+		},
+		{
+			name:      "github.PullRequestReviewCommentEvent@invalid",
+			eventType: EventTypePullRequestReviewComment,
+			eventJSON: []byte("...invalid..."),
+			err:       fmt.Errorf("failed to extract data from JSON for event 'pull_request_review_comment': invalid character '.' looking for beginning of value"),
 		},
 	}
 
@@ -63,6 +124,7 @@ func TestPayloadFactory(t *testing.T) {
 				assert.Equal(t, tt.expectedPayload.Action(), payload.Action())
 				assert.Equal(t, tt.expectedPayload.RepositoryName(), payload.RepositoryName())
 				assert.Equal(t, tt.expectedPayload.RepositoryOwner(), payload.RepositoryOwner())
+				assert.Equal(t, tt.expectedPayload.IssueNumber(), payload.IssueNumber())
 				assert.Equal(t, tt.expectedPayload.Body(), payload.Body())
 				assert.NotNil(t, payload.Raw())
 			case tt.err != nil:
