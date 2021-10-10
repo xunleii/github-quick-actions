@@ -23,6 +23,11 @@ _Use `me` to assign yourself._
 """
 
 [[quick_actions.released]]
+quick_action = ["/unassign", "/remove_assignees"]
+on_events = ["issue_comment", "pull_request_review_comment"]
+description = "Remove all assignees."
+
+[[quick_actions.released]]
 quick_action = ["/unassign @user [@user...]"]
 on_events = ["issue_comment", "pull_request_review_comment"]
 description = """
@@ -70,11 +75,6 @@ description = """
 Replace current assignees with those specified.
 _Use `me` to assign yourself._
 """
-
-[[quick_actions.next_releases]]
-quick_action = ["/unassign", "/remove_assignees"]
-on_events = ["issue_comment", "pull_request_review_comment"]
-description = "Remove all assignees."
 
 [[quick_actions.next_releases]]
 quick_action = ["/relabel ~label [~label...]"]
