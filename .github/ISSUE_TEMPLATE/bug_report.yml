@@ -1,4 +1,4 @@
-name: Report bug
+name: Report an issue
 description: File a bug/issue
 title: "..."
 labels: [kind/bug]
@@ -10,6 +10,15 @@ body:
       options:
         - label: I have searched the existing issues
           required: true
+
+  - type: checkboxes
+    attributes:
+      label: Where this issue occurred?
+      description: Where you encountered this issue?
+      options:
+        - label: On the official Github Application
+        - label: On serverless deployment
+        - label: Using the binary (compiled on your side)
 
   - type: textarea
     attributes:
