@@ -1,6 +1,6 @@
 name: Report bug
 description: File a bug/issue
-title: ""
+title: "..."
 labels: [kind/bug]
 body:
   - type: checkboxes
