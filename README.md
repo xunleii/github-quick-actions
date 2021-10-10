@@ -1,5 +1,3 @@
-make: Entering directory '/home/alexandre/Workspaces/oss/github-quick-actions/docs'
-
 # Github quick actions
 
 ![GitHub deployments](https://img.shields.io/github/deployments/xunleii/github-quick-actions/AWS%20Lambda?label=Published%20on%20AWS%20Lambda)
