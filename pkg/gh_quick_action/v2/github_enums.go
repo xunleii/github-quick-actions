@@ -4,7 +4,10 @@ package gh_quick_actions
 type EventType string
 
 const (
-	EventTypeIssueComment EventType = "issue_comment"
+	EventTypeIssue                    EventType = "issue"
+	EventTypeIssueComment             EventType = "issue_comment"
+	EventTypePullRequest              EventType = "pull_request"
+	EventTypePullRequestReviewComment EventType = "pull_request_review_comment"
 )
 
 // EventAction enumerates all possible action available on a event

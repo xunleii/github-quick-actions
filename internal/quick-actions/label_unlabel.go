@@ -21,6 +21,10 @@ type (
 	UnlabelQuickAction struct{ labelsHelper }
 )
 
+func (qa LabelQuickAction) TriggerOnEvents() []EventType {
+	// NOTE: adding label should be triggered on issues & pull requests description too
+	return []EventType{EventTypeIssue, EventTypeIssueComment, EventTypePullRequest, EventTypePullRequestReviewComment}
+}
 func (qa LabelQuickAction) HandleCommand(ctx *EventContext, command *EventCommand) error {
 	logger := zerolog.Ctx(ctx).With().
 		Str("quick_action", "label").
@@ -92,7 +96,10 @@ func (qa UnlabelQuickAction) HandleCommand(ctx *EventContext, command *EventComm
 	return err
 }
 
-func (labelsHelper) TriggerOnEvents() []EventType { return []EventType{EventTypeIssueComment} }
+func (labelsHelper) TriggerOnEvents() []EventType {
+	// NOTE: all label changes should be triggered on comment
+	return []EventType{EventTypeIssueComment, EventTypePullRequestReviewComment}
+}
 func (labelsHelper) getLabels(command *EventCommand) []string {
 	var labels []string
 	for _, label := range command.Arguments {

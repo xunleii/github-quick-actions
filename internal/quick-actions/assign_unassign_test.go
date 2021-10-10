@@ -1,6 +1,7 @@
 package quick_actions
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/cucumber/godog"
@@ -10,15 +11,14 @@ import (
 	gqa_scenario_context "xnku.be/github-quick-actions/pkg/ghk_scenario_ctx"
 )
 
-func TestAssigneesHelper_TriggerOnEvents(t *testing.T) {
-	assert.ElementsMatch(t, []EventType{EventTypeIssueComment}, assigneesHelper{}.TriggerOnEvents())
-}
-
 func TestAssigneesHelper_getAssignees(t *testing.T) {
 	noErr := func(e EventPayload, _ error) EventPayload { return e }
 
 	payloads := []EventPayload{
+		noErr(PayloadFactory(EventTypeIssue, []byte(`{"issue":{"user":{"login":"xunleii"}}}`))),
 		noErr(PayloadFactory(EventTypeIssueComment, []byte(`{"comment":{"user":{"login":"xunleii"}}}`))),
+		noErr(PayloadFactory(EventTypePullRequest, []byte(`{"pull_request":{"user":{"login":"xunleii"}}}`))),
+		noErr(PayloadFactory(EventTypePullRequestReviewComment, []byte(`{"comment":{"user":{"login":"xunleii"}}}`))),
 	}
 
 	ts := map[string]struct {
@@ -78,34 +78,78 @@ func TestAssigneesHelper_getAssignees(t *testing.T) {
 	}
 }
 
-func TestAssignFeature(t *testing.T) {
-	suite := godog.TestSuite{
-		ScenarioInitializer: gqa_scenario_context.ScenarioInitializer(map[string]QuickAction{"assign": &AssignQuickAction{}}),
-		Options: &godog.Options{
-			Format:   "pretty",
-			Paths:    []string{"ghk::features"},
-			Tags:     "assign",
-			TestingT: t,
-		},
+func TestAssigneesHelper_getExistingAssignees(t *testing.T) {
+	noErr := func(e EventPayload, _ error) EventPayload { return e }
+
+	payloads := []EventPayload{
+		noErr(PayloadFactory(EventTypeIssue, []byte(`{"issue": {"assignees": [{"login": "mojombo"}, {"login": "defunkt"}]}}`))),
+		noErr(PayloadFactory(EventTypeIssueComment, []byte(`{"issue": {"assignees": [{"login": "mojombo"}, {"login": "defunkt"}]}}`))),
+		noErr(PayloadFactory(EventTypePullRequest, []byte(`{"pull_request": {"assignees": [{"login": "mojombo"}, {"login": "defunkt"}]}}`))),
+		noErr(PayloadFactory(EventTypePullRequestReviewComment, []byte(`{"pull_request": {"assignees": [{"login": "mojombo"}, {"login": "defunkt"}]}}`))),
 	}
 
-	if suite.Run() != 0 {
-		t.Fatal("non-zero status returned, failed to run feature tests")
+	for _, payload := range payloads {
+		t.Run(string(payload.Type()), func(t *testing.T) {
+			assignees := assigneesHelper{}.getExistingAssignees(&EventCommand{Payload: payload})
+			assert.ElementsMatch(t, assignees, []string{"mojombo", "defunkt"})
+		})
 	}
 }
 
-func TestUnassignFeature(t *testing.T) {
-	suite := godog.TestSuite{
-		ScenarioInitializer: gqa_scenario_context.ScenarioInitializer(map[string]QuickAction{"unassign": &UnassignQuickAction{}}),
-		Options: &godog.Options{
-			Format:   "pretty",
-			Paths:    []string{"ghk::features"},
-			Tags:     "unassign",
-			TestingT: t,
-		},
-	}
+func TestAssign_TriggerOnEvents(t *testing.T) {
+	assert.ElementsMatch(t,
+		[]EventType{EventTypeIssue, EventTypeIssueComment, EventTypePullRequest, EventTypePullRequestReviewComment},
+		AssignQuickAction{}.TriggerOnEvents(),
+	)
+}
 
-	if suite.Run() != 0 {
-		t.Fatal("non-zero status returned, failed to run feature tests")
+func TestAssignFeature(t *testing.T) {
+	events := AssignQuickAction{}.TriggerOnEvents()
+
+	for _, event := range events {
+		t.Run(string(event), func(t *testing.T) {
+			suite := godog.TestSuite{
+				ScenarioInitializer: gqa_scenario_context.ScenarioInitializer(map[string]QuickAction{"assign": &AssignQuickAction{}}),
+				Options: &godog.Options{
+					Format:   "pretty",
+					Paths:    []string{"ghk::features"},
+					Tags:     fmt.Sprintf("assign && %s", event),
+					TestingT: t,
+				},
+			}
+
+			if suite.Run() != 0 {
+				t.Fatal("non-zero status returned, failed to run feature tests")
+			}
+		})
+	}
+}
+
+func TestUnassign_TriggerOnEvents(t *testing.T) {
+	assert.ElementsMatch(t,
+		[]EventType{EventTypeIssueComment, EventTypePullRequestReviewComment},
+		UnassignQuickAction{}.TriggerOnEvents(),
+	)
+}
+
+func TestUnassignFeature(t *testing.T) {
+	events := UnassignQuickAction{}.TriggerOnEvents()
+
+	for _, event := range events {
+		t.Run(string(event), func(t *testing.T) {
+			suite := godog.TestSuite{
+				ScenarioInitializer: gqa_scenario_context.ScenarioInitializer(map[string]QuickAction{"unassign": &UnassignQuickAction{}}),
+				Options: &godog.Options{
+					Format:   "pretty",
+					Paths:    []string{"ghk::features"},
+					Tags:     fmt.Sprintf("unassign && %s", event),
+					TestingT: t,
+				},
+			}
+
+			if suite.Run() != 0 {
+				t.Fatal("non-zero status returned, failed to run feature tests")
+			}
+		})
 	}
 }
