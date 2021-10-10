@@ -11,7 +11,12 @@
 
 [[quick_actions.released]]
 quick_action = [ "/assign @user [@user...]" ]
-on_events = [ "issue_comment" ]
+on_events = [
+  "issue",
+  "issue_comment",
+  "pull_request",
+  "pull_request_review_comment"
+]
 description = """
 Assign one or more users.
 _Use `me` to assign yourself._
@@ -19,7 +24,10 @@ _Use `me` to assign yourself._
 
 [[quick_actions.released]]
 quick_action = [ "/unassign @user [@user...]" ]
-on_events = [ "issue_comment" ]
+on_events = [
+  "issue_comment",
+  "pull_request_review_comment"
+]
 description = """
 Remove one or more assignees.
 _Use `me` to remove yourself._
@@ -54,18 +62,6 @@ description = "Remove all labels."
 # -----------------------------------------------------------------------------
 
 [[quick_actions.next_releases]]
-quick_action = [ "/assign @user [@user...]" ]
-on_events = [
-  "issue",
-  "pull_request",
-  "pull_request_review_comment"
-]
-description = """
-Assign one or more users.
-_Use `me` to assign yourself._
-"""
-
-[[quick_actions.next_releases]]
 quick_action = [ "/reassign @user [@user...]" ]
 on_events = [
   "issue_comment",
@@ -75,17 +71,6 @@ on_events = [
 description = """
 Replace current assignees with those specified.
 _Use `me` to assign yourself._
-"""
-
-[[quick_actions.next_releases]]
-quick_action = [ "/unassign @user [@user...]" ]
-on_events = [
-  "pull_request",
-  "pull_request_review_comment"
-]
-description = """
-Remove one or more assignees.
-_Use `me` to remove yourself._
 """
 
 [[quick_actions.next_releases]]
