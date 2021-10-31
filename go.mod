@@ -15,7 +15,7 @@ require (
 	github.com/improbable-eng/go-httpwares v0.0.0-20200609095714-edc8019f93cc
 	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/palantir/go-githubapp v0.9.3
-	github.com/prometheus/common v0.31.1
+	github.com/prometheus/common v0.32.1
 	github.com/rs/zerolog v1.25.0
 	github.com/shurcooL/githubv4 v0.0.0-20210922025249-6831e00d857f
 	github.com/stretchr/testify v1.7.0
