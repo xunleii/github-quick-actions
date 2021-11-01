@@ -87,12 +87,30 @@ func (ctx *QuickActionScenarioContext) simulateGithubAPIReply(method, rawURL str
 		return fmt.Errorf("failed to add response for %s %s: %w", method, url, err)
 	}
 
-	ctx.ghAPIProxy.NewRoute().
-		Methods(method).Host(url.Host).Path(url.Path).
-		HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
-			writer.WriteHeader(code)
-			_, _ = writer.Write([]byte(response))
-		})
+	rkey := fmt.Sprintf("%s %s", method, url)
+
+	// NOTE: in order to use once each call, we need to link all handler to the
+	//		 next one until we reach the default handler (LIFO queue)
+	// WARN: the first tuple (method, url) is the default handler
+
+	route := ctx.ghAPIProxy.GetRoute(rkey)
+	if route == nil {
+		route = ctx.ghAPIProxy.NewRoute().
+			Name(rkey).
+			Methods(method).Host(url.Host).Path(url.Path)
+	}
+
+	prev := route.GetHandler()
+	route.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if prev != nil {
+			prev.ServeHTTP(writer, request)
+			prev = nil
+			return
+		}
+
+		writer.WriteHeader(code)
+		_, _ = writer.Write([]byte(response))
+	})
 	return nil
 }
 
@@ -110,7 +128,6 @@ func (ctx *QuickActionScenarioContext) showAllRequests() error {
 
 	return fmt.Errorf("API requests: %v", requests)
 }
-
 
 // assertNoQuickActionsCalled asserts that Github Quick Actions didn't use any
 // Quick Actions during the current scenario.
