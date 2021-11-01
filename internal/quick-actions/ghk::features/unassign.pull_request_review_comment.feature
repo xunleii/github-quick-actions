@@ -39,8 +39,8 @@ Feature: unassign someone with /unassign @user [@user...] on pull request review
       }
       """
     Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event with arguments ["@mojombo","@defunkt"] by sending these following requests
-      | API request method | API request URL                                                              | API request payload                  |
-      | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo", "defunkt"]} |
+      | API request method | API request URL                                                              | API request payload                 |
+      | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo","defunkt"]} |
 
   @unassign
   Scenario: /unassign me
@@ -77,8 +77,8 @@ Feature: unassign someone with /unassign @user [@user...] on pull request review
       }
       """
     Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event with arguments ["@mojombo","me"] by sending these following requests
-      | API request method | API request URL                                                              | API request payload                  |
-      | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo", "xunleii"]} |
+      | API request method | API request URL                                                              | API request payload                 |
+      | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo","xunleii"]} |
 
   @unassign
   Scenario: /unassign @mojombo @mojombo
@@ -135,8 +135,8 @@ Feature: unassign someone with /unassign @user [@user...] on pull request review
       }
       """
     Then Github Quick Actions should handle command "/unassign" for "pull_request_review_comment" event without argument by sending these following requests
-      | API request method | API request URL                                                              | API request payload                  |
-      | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo", "defunkt"]} |
+      | API request method | API request URL                                                              | API request payload                 |
+      | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/assignees | {"assignees":["mojombo","defunkt"]} |
 
   @unassign
   Scenario: /unassign me on an invalid repository

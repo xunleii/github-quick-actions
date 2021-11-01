@@ -24,7 +24,7 @@ Feature: add label with /label ~label [~label...] on issue description
       """
     Then Github Quick Actions should handle command "/label" for "issue" event with arguments ["~feature"] by sending these following requests
       | API request method | API request URL                                                           | API request payload |
-      | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["feature"]}        |
+      | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["feature"]         |
 
   @label
   Scenario: /label ~feature ~bug:critical
@@ -45,8 +45,8 @@ Feature: add label with /label ~label [~label...] on issue description
       }
       """
     Then Github Quick Actions should handle command "/label" for "issue" event with arguments ["~feature","~bug:critical"] by sending these following requests
-      | API request method | API request URL                                                           | API request payload         |
-      | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["feature","bug:critical"]} |
+      | API request method | API request URL                                                           | API request payload        |
+      | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["feature","bug:critical"] |
 
   @label
   Scenario: /label ~feature feature
@@ -68,7 +68,7 @@ Feature: add label with /label ~label [~label...] on issue description
       """
     Then Github Quick Actions should handle command "/label" for "issue" event with arguments ["~feature","feature"] by sending these following requests
       | API request method | API request URL                                                           | API request payload |
-      | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["feature"]}        |
+      | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["feature"]         |
 
   @label
   Scenario: /label without argument
