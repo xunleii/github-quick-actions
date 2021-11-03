@@ -35,7 +35,7 @@ func (qa DuplicateQuickAction) HandleCommand(ctx *EventContext, command *EventCo
 		if !strings.HasPrefix(issue, "#") {
 			logger.Debug().Msgf("invalid issue '%s' provided; ignored", issue)
 			continue
-        }
+		}
 
 		n, err := strconv.Atoi(strings.TrimPrefix(issue, "#"))
 		if err != nil {
@@ -103,4 +103,9 @@ func (qa DuplicateQuickAction) HandleCommand(ctx *EventContext, command *EventCo
 	}
 
 	return errs.ErrorOrNil()
+}
+
+func init() {
+	// NOTE: register quick actions
+	registerQuickAction("duplicate", &DuplicateQuickAction{})
 }
