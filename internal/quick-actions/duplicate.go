@@ -20,7 +20,7 @@ type (
 
 func (qa DuplicateQuickAction) TriggerOnEvents() []EventType {
 	// NOTE: assign should be triggered on issues & pull requests description
-	return []EventType{EventTypeIssue, EventTypeIssueComment, EventTypePullRequest}
+	return []EventType{EventTypeIssueComment, EventTypePullRequestReviewComment}
 }
 
 func (qa DuplicateQuickAction) HandleCommand(ctx *EventContext, command *EventCommand) error {
