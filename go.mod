@@ -3,7 +3,7 @@ module xnku.be/github-quick-actions
 go 1.17
 
 require (
-	github.com/alecthomas/kong v0.2.17
+	github.com/alecthomas/kong v0.2.18
 	github.com/aws/aws-lambda-go v1.27.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.11.0
 	github.com/cucumber/godog v0.12.2
