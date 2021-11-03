@@ -81,9 +81,9 @@ func (i *PullRequestReviewCommentEvent) Raw() interface{}        { return i.Pull
 
 // payloadFactory is only used internally to generate EventPayload from raw JSON.
 var payloadFactory = map[EventType]func([]byte) (EventPayload, error){
-	EventTypeIssue: newIssueEvent,
-	EventTypeIssueComment: newIssueCommentEvent,
-	EventTypePullRequest: newPullRequestEvent,
+	EventTypeIssue:                    newIssueEvent,
+	EventTypeIssueComment:             newIssueCommentEvent,
+	EventTypePullRequest:              newPullRequestEvent,
 	EventTypePullRequestReviewComment: newPullRequestReviewCommentEvent,
 }
 
