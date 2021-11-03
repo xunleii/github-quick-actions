@@ -24,7 +24,7 @@ jobs:
           -X github.com/prometheus/common/version.BuildUser=${{ github.actor }}@github.${{ github.run_id }}
           -X github.com/prometheus/common/version.BuildDate=$(date --iso-8601=seconds)
           "
-      - name: Archive code coverage results
+      - name: Archive built release
         uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074 # renovate: tag=v2.2.4
         with:
           name: github-quick-actions
