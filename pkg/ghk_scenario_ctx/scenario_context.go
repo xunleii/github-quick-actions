@@ -12,7 +12,6 @@ import (
 	"github.com/cucumber/godog"
 	"github.com/google/uuid"
 	"github.com/hashicorp/go-multierror"
-	"github.com/nsf/jsondiff"
 	"github.com/thoas/go-funk"
 
 	gh_quick_actions "xnku.be/github-quick-actions/pkg/gh_quick_action/v2"
@@ -87,12 +86,30 @@ func (ctx *QuickActionScenarioContext) simulateGithubAPIReply(method, rawURL str
 		return fmt.Errorf("failed to add response for %s %s: %w", method, url, err)
 	}
 
-	ctx.ghAPIProxy.NewRoute().
-		Methods(method).Host(url.Host).Path(url.Path).
-		HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
-			writer.WriteHeader(code)
-			_, _ = writer.Write([]byte(response))
-		})
+	rkey := fmt.Sprintf("%s %s", method, url)
+
+	// NOTE: in order to use once each call, we need to link all handler to the
+	//		 next one until we reach the default handler (LIFO queue)
+	// WARN: the first tuple (method, url) is the default handler
+
+	route := ctx.ghAPIProxy.GetRoute(rkey)
+	if route == nil {
+		route = ctx.ghAPIProxy.NewRoute().
+			Name(rkey).
+			Methods(method).Host(url.Host).Path(url.Path)
+	}
+
+	prev := route.GetHandler()
+	route.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if prev != nil {
+			prev.ServeHTTP(writer, request)
+			prev = nil
+			return
+		}
+
+		writer.WriteHeader(code)
+		_, _ = writer.Write([]byte(response))
+	})
 	return nil
 }
 
@@ -110,7 +127,6 @@ func (ctx *QuickActionScenarioContext) showAllRequests() error {
 
 	return fmt.Errorf("API requests: %v", requests)
 }
-
 
 // assertNoQuickActionsCalled asserts that Github Quick Actions didn't use any
 // Quick Actions during the current scenario.
@@ -157,13 +173,11 @@ func (ctx *QuickActionScenarioContext) assertErrorsHasBeenReturned(errorsDoc *go
 // assertCommandTriggeredSuccessfully asserts that the specified command
 // should be triggered, has sent the given requests and didn't have returned anything
 func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfully(command, eventType, argumentsJSON string, requestsTable *godog.Table) error {
-	// check if no error was returned
 	errs := ctx.errorsForCommand(eventType, command, argumentsJSON)
 	if len(errs) != 0 {
 		return fmt.Errorf(`Command "/%s" (with %s) on "%s" event has returned the following error(s): %v`, command, argumentsJSON, eventType, errs)
 	}
 
-	// check if the current command has been called at least one time
 	requests := ctx.ghAPIProxy.HandledRequests().
 		WithEventType(eventType).
 		WithCommand(command).
@@ -172,11 +186,9 @@ func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfully(comman
 		return fmt.Errorf(`Command "/%s" (with %s) on "%s" event hasn't been called'`, command, argumentsJSON, eventType)
 	}
 
-	// check row validity
 	if len(requestsTable.Rows) < 2 {
 		return fmt.Errorf("At least 1 request should be defined")
 	}
-
 	if len(requestsTable.Rows[0].Cells) != 3 ||
 		requestsTable.Rows[0].Cells[0].Value != "API request method" ||
 		requestsTable.Rows[0].Cells[1].Value != "API request URL" ||
@@ -184,39 +196,45 @@ func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfully(comman
 		return fmt.Errorf(`Invalid table definition; it must contain these 3 columns: "API request method", "API request URL" and "API request payload"`)
 	}
 
-	// check each row
-tableIterator:
+	// NOTE: create a common structure to compare expected and actual requests
+	type Request struct{ key, method, url, payload string }
+
+	var expectedRequests []Request
 	for _, row := range requestsTable.Rows[1:] {
-		method := row.Cells[0].Value
-		url := row.Cells[1].Value
-		expectedPayload := row.Cells[2].Value
+		expectedRequests = append(expectedRequests, Request{
+			key:     fmt.Sprintf("%s%s%s", row.Cells[0].Value, row.Cells[1].Value, row.Cells[2].Value),
+			method:  row.Cells[0].Value,
+			url:     row.Cells[1].Value,
+			payload: row.Cells[2].Value,
+		})
+	}
 
-		for _, request := range requests.With(func(r APIRequest) bool { return r.IsGithubAPIRequest() }) {
-			if request.Method != method {
-				continue
-			}
-			if request.URL.String() != url {
-				continue
-			}
-
-			if request.Body == nil {
-				if expectedPayload == "" {
-					continue tableIterator
-				}
-			} else {
-				actual, _ := io.ReadAll(request.Body)
-				_ = request.Body.Close()
-
-				diff, _ := jsondiff.Compare(actual, []byte(expectedPayload), &jsondiff.Options{})
-				if diff == jsondiff.FullMatch || diff == jsondiff.SupersetMatch {
-					continue tableIterator
-				}
-
-			}
+	var currentRequests []Request
+	for _, request := range requests.With(func(r APIRequest) bool { return !r.IsMetadataRequest() }) {
+		body := ""
+		if request.Body != nil {
+			bytes, _ := io.ReadAll(request.Body)
+			_ = request.Body.Close()
+			body = strings.TrimSpace(string(bytes))
 		}
 
-		errs = append(errs, fmt.Sprintf(`No valid request %s on "%s" for command "/%s" (with %s) on "%s" event`, method, url, command, argumentsJSON, eventType))
+		currentRequests = append(currentRequests, Request{
+            key:     fmt.Sprintf("%s%s%s", request.Method, request.URL.String(), body),
+            method:  request.Method,
+            url:     request.URL.String(),
+            payload: body,
+        })
 	}
+
+	// NOTE: extract expected requests not found in current requests
+	for _, req := range funk.Join(expectedRequests, currentRequests, funk.LeftJoin).([]Request) {
+		errs = append(errs, fmt.Sprintf(`missing or invalid request %s on "%s" for command "/%s" (with %s) on "%s" event`, req.method, req.url, command, argumentsJSON, eventType))
+	}
+
+	// NOTE: extract current requests not found in expected requests
+	for _, req := range funk.Join(expectedRequests, currentRequests, funk.RightJoin).([]Request) {
+		errs = append(errs, fmt.Sprintf(`extra request %s on "%s" for command "/%s" (with %s) on "%s" event`, req.method, req.url, command, argumentsJSON, eventType))
+    }
 
 	switch len(errs) {
 	case 0:
@@ -235,13 +253,11 @@ func (ctx *QuickActionScenarioContext) assertNoArgCommandTriggeredSuccessfully(c
 }
 
 func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfullyWithoutRequest(command, eventType, argumentsJSON string) error {
-	// check if no error was returned
 	errs := ctx.errorsForCommand(eventType, command, argumentsJSON)
 	if len(errs) != 0 {
 		return fmt.Errorf(`Command "/%s" (with %s) on "%s" event has returned the following error(s): %v`, command, argumentsJSON, eventType, errs)
 	}
 
-	// check if the current command has been called at least one time
 	requests := ctx.ghAPIProxy.HandledRequests().
 		WithEventType(eventType).
 		WithCommand(command).

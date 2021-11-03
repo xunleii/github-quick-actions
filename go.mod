@@ -13,7 +13,6 @@ require (
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/improbable-eng/go-httpwares v0.0.0-20200609095714-edc8019f93cc
-	github.com/nsf/jsondiff v0.0.0-20210926074059-1e845ec5d249
 	github.com/palantir/go-githubapp v0.9.3
 	github.com/prometheus/common v0.32.1
 	github.com/rs/zerolog v1.26.0
@@ -30,11 +29,9 @@ require (
 	github.com/cucumber/gherkin-go/v19 v19.0.3 // indirect
 	github.com/cucumber/messages-go/v16 v16.0.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1 // indirect
 	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/golang-jwt/jwt/v4 v4.0.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-github/v38 v38.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect

@@ -81,8 +81,8 @@ Feature: remove label with /unlabel ~label [~label...] on issue comment
       | API request method | API request URL                                                           | API request payload |
       | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels |                     |
 
-  @unlabel
-  Scenario: /unlabel ~feature on an invalid repository
+  @unlabel @error
+  Scenario: error handling on /unlabel
     Given Github replies to 'DELETE https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels/feature' with '404 {"message": "Not Found", "documentation_url": "https://docs.github.com/en/rest/reference/issues#add-labels-to-an-issue"}'
     When Github sends an event "issue_comment" with
       """
