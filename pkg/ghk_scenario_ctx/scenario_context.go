@@ -219,11 +219,11 @@ func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfully(comman
 		}
 
 		currentRequests = append(currentRequests, Request{
-            key:     fmt.Sprintf("%s%s%s", request.Method, request.URL.String(), body),
-            method:  request.Method,
-            url:     request.URL.String(),
-            payload: body,
-        })
+			key:     fmt.Sprintf("%s%s%s", request.Method, request.URL.String(), body),
+			method:  request.Method,
+			url:     request.URL.String(),
+			payload: body,
+		})
 	}
 
 	// NOTE: extract expected requests not found in current requests
@@ -234,7 +234,7 @@ func (ctx *QuickActionScenarioContext) assertCommandTriggeredSuccessfully(comman
 	// NOTE: extract current requests not found in expected requests
 	for _, req := range funk.Join(expectedRequests, currentRequests, funk.RightJoin).([]Request) {
 		errs = append(errs, fmt.Sprintf(`extra request %s on "%s" for command "/%s" (with %s) on "%s" event`, req.method, req.url, command, argumentsJSON, eventType))
-    }
+	}
 
 	switch len(errs) {
 	case 0:

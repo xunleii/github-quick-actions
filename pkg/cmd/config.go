@@ -15,15 +15,15 @@ import (
 
 const (
 	EnvVarAPIVersion = "GQA_GITHUB_API_VERSION"
-	EnvVarAPIUrl = "GQA_GITHUB_ADDR"
+	EnvVarAPIUrl     = "GQA_GITHUB_ADDR"
 
 	EnvVarIntegrationID = "GQA_GITHUB_APP_ID"
 	EnvVarWebhookSecret = "GQA_GITHUB_WEBHOOK_SECRET"
-	EnvVarPkey = "GQA_GITHUB_PKEY"
+	EnvVarPkey          = "GQA_GITHUB_PKEY"
 
 	EnvVarListenAddr = "GQA_LISTEN_ADDR"
 	EnvVarListenPath = "GQA_LISTEN_PATH"
-	EnvVarUserAgent = "GQA_USER_AGENT"
+	EnvVarUserAgent  = "GQA_USER_AGENT"
 
 	EnvVarLogLevel = "GQA_LOG_LEVEL"
 )
