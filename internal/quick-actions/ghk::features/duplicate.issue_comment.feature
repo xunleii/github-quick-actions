@@ -1,5 +1,5 @@
-@issue
-Feature: assign someone with /duplicate #issue [#issue...] on issue description
+@issue_comment
+Feature: assign someone with /duplicate #issue [#issue...] on issue comment
 
   Background:
     Given quick action "/duplicate" is registered for "issue_comment" events

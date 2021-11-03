@@ -12,7 +12,7 @@ import (
 
 func TestDuplicateQuickAction_TriggerOnEvents(t *testing.T) {
 	assert.ElementsMatch(t,
-		[]EventType{EventTypeIssue, EventTypeIssueComment, EventTypePullRequest},
+		[]EventType{EventTypeIssueComment, EventTypePullRequestReviewComment},
 		DuplicateQuickAction{}.TriggerOnEvents(),
 	)
 }

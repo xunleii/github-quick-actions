@@ -61,7 +61,7 @@ Feature: add label with /label ~label [~label...] on issue comment
       | API request method | API request URL                                                           | API request payload |
       | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["feature"]         |
 
-  @label @label
+  @label @error
   Scenario: /label without argument
     When Github sends an event "issue_comment" with
       """

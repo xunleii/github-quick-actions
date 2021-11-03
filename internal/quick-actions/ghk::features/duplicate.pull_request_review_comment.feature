@@ -1,31 +1,28 @@
-@issue
-Feature: assign someone with /duplicate #issue [#issue...] on pull request description
+@pull_request_review_comment
+Feature: assign someone with /duplicate #issue [#issue...] on review comment
 
   Background:
-    Given quick action "/duplicate" is registered for "pull_request" events
+    Given quick action "/duplicate" is registered for "pull_request_review_comment" events
 
   @duplicate
   Scenario: /duplicate #1
     # Comment ID required to remove the comment
     Given Github replies to 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/2/comments' with '200 {"id": 1234}'
 
-    When Github sends an event "pull_request" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
+        "comment": { "body": "/duplicate #1", "user": { "login":"xunleii" }},
         "repository": {
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "pull_request": {
-          "body": "/duplicate #1",
-          "number": 2,
-          "user": { "login":"xunleii" }
-        },
+        "pull_request": { "number": 2 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/duplicate" for "pull_request" event with arguments ["#1"] by sending these following requests
+    Then Github Quick Actions should handle command "/duplicate" for "pull_request_review_comment" event with arguments ["#1"] by sending these following requests
       | API request method | API request URL                                                                | API request payload        |
       | GET                | https://api.github.com/repos/xunleii/github-quick-actions/issues/1             |                            |
       | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/2/comments    | {"body":"Duplicate of #1"} |
@@ -37,23 +34,20 @@ Feature: assign someone with /duplicate #issue [#issue...] on pull request descr
     Given Github replies to 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/3/comments' with '200 {"id": 1234}'
     Given Github replies to 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/3/comments' with '200 {"id": 1235}'
 
-    When Github sends an event "pull_request" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
+        "comment": { "body": "/duplicate #1 #2", "user": { "login":"xunleii" }},
         "repository": {
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "pull_request": {
-          "body": "/duplicate #1 #2",
-          "number": 3,
-          "user": { "login":"xunleii" }
-        },
+        "pull_request": { "number": 3 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/duplicate" for "pull_request" event with arguments ["#1","#2"] by sending these following requests
+    Then Github Quick Actions should handle command "/duplicate" for "pull_request_review_comment" event with arguments ["#1","#2"] by sending these following requests
       | API request method | API request URL                                                                | API request payload        |
       | GET                | https://api.github.com/repos/xunleii/github-quick-actions/issues/1             |                            |
       | GET                | https://api.github.com/repos/xunleii/github-quick-actions/issues/2             |                            |
@@ -67,23 +61,20 @@ Feature: assign someone with /duplicate #issue [#issue...] on pull request descr
     # Comment ID required to remove the comment
     Given Github replies to 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/2/comments' with '200 {"id": 1234}'
 
-    When Github sends an event "pull_request" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
+        "comment": { "body": "/duplicate #1 #1", "user": { "login":"xunleii" }},
         "repository": {
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "pull_request": {
-          "body": "/duplicate #1 #1",
-          "number": 2,
-          "user": { "login":"xunleii" }
-        },
+        "pull_request": { "number": 2 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/duplicate" for "pull_request" event with arguments ["#1","#1"] by sending these following requests
+    Then Github Quick Actions should handle command "/duplicate" for "pull_request_review_comment" event with arguments ["#1","#1"] by sending these following requests
       | API request method | API request URL                                                                | API request payload        |
       | GET                | https://api.github.com/repos/xunleii/github-quick-actions/issues/1             |                            |
       | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/2/comments    | {"body":"Duplicate of #1"} |
@@ -91,127 +82,109 @@ Feature: assign someone with /duplicate #issue [#issue...] on pull request descr
 
   @duplicate
   Scenario: invalid /duplicate 1
-    When Github sends an event "pull_request" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
+        "comment": { "body": "/duplicate 1", "user": { "login":"xunleii" }},
         "repository": {
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "pull_request": {
-          "body": "/duplicate 1",
-          "number": 2,
-          "user": { "login":"xunleii" }
-        },
+        "pull_request": { "number": 2 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/duplicate" for "pull_request" event with arguments ["1"] without sending anything
+    Then Github Quick Actions should handle command "/duplicate" for "pull_request_review_comment" event with arguments ["1"] without sending anything
 
   @duplicate
   Scenario: invalid /duplicate wrong #issue
-    When Github sends an event "pull_request" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
+        "comment": { "body": "/duplicate wrong #issue", "user": { "login":"xunleii" }},
         "repository": {
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "pull_request": {
-          "body": "/duplicate wrong #issue",
-          "number": 2,
-          "user": { "login":"xunleii" }
-        },
+        "pull_request": { "number": 2 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/duplicate" for "pull_request" event with arguments ["wrong","#issue"] without sending anything
+    Then Github Quick Actions should handle command "/duplicate" for "pull_request_review_comment" event with arguments ["wrong","#issue"] without sending anything
 
   @duplicate @error
   Scenario: /duplicate without arguments
-    When Github sends an event "pull_request" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
+        "comment": { "body": "/duplicate", "user": { "login":"xunleii" }},
         "repository": {
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "pull_request": {
-          "body": "/duplicate",
-          "number": 2,
-          "user": { "login":"xunleii" }
-        },
+        "pull_request": { "number": 2 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/duplicate" for "pull_request" event without argument without sending anything
+    Then Github Quick Actions should handle command "/duplicate" for "pull_request_review_comment" event without argument without sending anything
 
   @duplicate @error
   Scenario: /duplicate itself
     Given Github replies to 'GET https://api.github.com/repos/xunleii/github-quick-actions/issues/1' with '404 {"message": "Not Found", "documentation_url": ""}'
 
-    When Github sends an event "pull_request" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
+        "comment": { "body": "/duplicate #1", "user": { "login":"xunleii" }},
         "repository": {
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "pull_request": {
-          "body": "/duplicate #1",
-          "number": 1,
-          "user": { "login":"xunleii" }
-        },
+        "pull_request": { "number": 1 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/duplicate" for "pull_request" event with arguments ["#1"] without sending anything
+    Then Github Quick Actions should handle command "/duplicate" for "pull_request_review_comment" event with arguments ["#1"] without sending anything
 
   @duplicate @error
   Scenario: /duplicate #1 when issue #1 doesn't exist
     Given Github replies to 'GET https://api.github.com/repos/xunleii/github-quick-actions/issues/1' with '404 {"message": "Not Found", "documentation_url": ""}'
 
-    When Github sends an event "pull_request" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
+        "comment": { "body": "/duplicate #1", "user": { "login":"xunleii" }},
         "repository": {
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "pull_request": {
-          "body": "/duplicate #1",
-          "number": 2,
-          "user": { "login":"xunleii" }
-        },
+        "pull_request": { "number": 2 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/duplicate" for "pull_request" event with arguments ["#1"] by sending these following requests
+    Then Github Quick Actions should handle command "/duplicate" for "pull_request_review_comment" event with arguments ["#1"] by sending these following requests
       | API request method | API request URL                                                                | API request payload        |
       | GET                | https://api.github.com/repos/xunleii/github-quick-actions/issues/1             |                            |
 
   @duplicate @error
   Scenario: error handling on /duplicate
     Given Github replies to 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/2/comments' with '404 {"message": "Not Found", "documentation_url": "https://docs.github.com/en/rest/reference/issues#add-labels-to-an-issue"}'
-    When Github sends an event "pull_request" with
+    When Github sends an event "pull_request_review_comment" with
       """
       {
         "action": "created",
+        "comment": { "body": "/duplicate #1", "user": { "login":"xunleii" }},
         "repository": {
           "owner": { "login": "xunleii" },
           "name": "github-quick-actions"
         },
-        "pull_request": {
-          "body": "/duplicate #1",
-          "number": 2,
-          "user": { "login":"xunleii" }
-        },
+        "pull_request": { "number": 2 },
         "installation": { "id": 123456789 }
       }
       """
-    Then Github Quick Actions should handle command "/duplicate" for "pull_request" event with arguments ["#1"] but returns this error: 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/2/comments: 404 Not Found []'
+    Then Github Quick Actions should handle command "/duplicate" for "pull_request_review_comment" event with arguments ["#1"] but returns this error: 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/2/comments: 404 Not Found []'
