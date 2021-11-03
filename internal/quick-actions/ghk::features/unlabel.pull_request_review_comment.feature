@@ -81,8 +81,8 @@ Feature: remove label with /unlabel ~label [~label...] on pull request review co
       | API request method | API request URL                                                           | API request payload |
       | DELETE             | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels |                     |
 
-  @unlabel
-  Scenario: /unlabel ~feature on an invalid repository
+  @unlabel @error
+  Scenario: error handling on /unlabel
     Given Github replies to 'DELETE https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels/feature' with '404 {"message": "Not Found", "documentation_url": "https://docs.github.com/en/rest/reference/pull_requests#add-labels-to-an-pull_request"}'
     When Github sends an event "pull_request_review_comment" with
       """

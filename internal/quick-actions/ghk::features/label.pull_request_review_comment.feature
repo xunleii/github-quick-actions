@@ -61,7 +61,7 @@ Feature: add label with /label ~label [~label...] on pull request review comment
       | API request method | API request URL                                                           | API request payload |
       | POST               | https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels | ["feature"]         |
 
-  @label
+  @label @error
   Scenario: /label without argument
     When Github sends an event "pull_request_review_comment" with
       """
@@ -78,8 +78,8 @@ Feature: add label with /label ~label [~label...] on pull request review comment
       """
     Then Github Quick Actions should handle command "/label" for "pull_request_review_comment" event without argument without sending anything
 
-  @label
-  Scenario: /label ~feature on an invalid repository
+  @label @error
+  Scenario: error handling on /label
     Given Github replies to 'POST https://api.github.com/repos/xunleii/github-quick-actions/issues/1/labels' with '404 {"message": "Not Found", "documentation_url": "https://docs.github.com/en/rest/reference/issues#add-labels-to-an-issue"}'
     When Github sends an event "pull_request_review_comment" with
       """
