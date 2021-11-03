@@ -36,6 +36,11 @@ _Use `me` to remove yourself._
 """
 
 [[quick_actions.released]]
+quick_action = ["/duplicate #issue"]
+on_events = ["issue_comment", "pull_request_review_comment"]
+description = "Close this issue and mark as a duplicate of another issue."
+
+[[quick_actions.released]]
 quick_action = ["/label ~label [~label...]"]
 on_events = [
   "issue",
@@ -154,11 +159,6 @@ description = """
 Create a new merge request starting from the current issue.
 _It will automatically link the current issue with the new PR_
 """
-
-[[quick_actions.next_releases]]
-quick_action = ["/duplicate #issue"]
-on_events = ["issue_comment", "pull_request_review_comment"]
-description = "Close this issue and mark as a duplicate of another issue."
 
 [[quick_actions.next_releases]]
 quick_action = ["/milestone %milestone"]
