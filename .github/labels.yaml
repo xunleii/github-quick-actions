@@ -10,6 +10,9 @@
 - name: kind/enhancement
   description: New feature or request
   color: A2EEEF
+- name: kind/fix
+  description: Fix an existing problem
+  color: 10ef34
 - name: kind/question
   description: Further information is requested
   color: D876E3

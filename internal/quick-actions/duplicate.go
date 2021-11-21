@@ -73,33 +73,14 @@ func (qa DuplicateQuickAction) HandleCommand(ctx *EventContext, command *EventCo
 			continue
 		}
 
-		comment, _, err := client.Issues.CreateComment(
+		_, _, err = client.Issues.CreateComment(
 			ctx,
 			command.Payload.RepositoryOwner(),
 			command.Payload.RepositoryName(),
 			command.Payload.IssueNumber(),
 			&github.IssueComment{Body: github.String(fmt.Sprintf("Duplicate of #%d", issue))},
 		)
-		if err != nil || comment.ID == nil {
-			errs = multierror.Append(errs, err)
-			logger.Error().
-				Err(err).
-				Msgf("failed to create comment `Duplicate of #%d`", issue)
-			continue
-		}
-
-		_, err = client.Issues.DeleteComment(ctx,
-			command.Payload.RepositoryOwner(),
-			command.Payload.RepositoryName(),
-			*comment.ID,
-		)
-		if err != nil {
-			errs = multierror.Append(errs, err)
-			logger.Error().
-				Err(err).
-				Msg("failed to delete comment")
-			continue
-		}
+		errs = multierror.Append(errs, err)
 	}
 
 	return errs.ErrorOrNil()
