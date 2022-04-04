@@ -24,11 +24,7 @@ func (qa DuplicateQuickAction) TriggerOnEvents() []EventType {
 }
 
 func (qa DuplicateQuickAction) HandleCommand(ctx *EventContext, command *EventCommand) error {
-	logger := zerolog.Ctx(ctx).With().
-		Str("quick_action", "duplicate").
-		Logger()
-
-	logger.Info().Msgf("handle `/duplicate` (args: %v)", command.Arguments)
+	logger := zerolog.Ctx(ctx)
 
 	var issues []int
 	for _, issue := range command.Arguments {
@@ -88,5 +84,5 @@ func (qa DuplicateQuickAction) HandleCommand(ctx *EventContext, command *EventCo
 
 func init() {
 	// NOTE: register quick actions
-	registerQuickAction("duplicate", &DuplicateQuickAction{})
+	registerQuickAction("duplicate", autoLogMiddleware{&DuplicateQuickAction{}})
 }

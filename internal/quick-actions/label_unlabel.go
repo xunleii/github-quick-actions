@@ -26,11 +26,7 @@ func (qa LabelQuickAction) TriggerOnEvents() []EventType {
 	return []EventType{EventTypeIssue, EventTypeIssueComment, EventTypePullRequest, EventTypePullRequestReviewComment}
 }
 func (qa LabelQuickAction) HandleCommand(ctx *EventContext, command *EventCommand) error {
-	logger := zerolog.Ctx(ctx).With().
-		Str("quick_action", "label").
-		Logger()
-
-	logger.Info().Msgf("handle `/label` (args: %v)", command.Arguments)
+	logger := zerolog.Ctx(ctx)
 
 	labels := qa.getLabels(command)
 	if len(labels) == 0 {
@@ -55,12 +51,6 @@ func (qa LabelQuickAction) HandleCommand(ctx *EventContext, command *EventComman
 }
 
 func (qa UnlabelQuickAction) HandleCommand(ctx *EventContext, command *EventCommand) error {
-	logger := zerolog.Ctx(ctx).With().
-		Str("quick_action", "unlabel").
-		Logger()
-
-	logger.Info().Msgf("handle `/unlabel` (args: %v)", command.Arguments)
-
 	labels := qa.getLabels(command)
 
 	client, err := qa.newInstallationClient(ctx, command.Payload)
@@ -118,7 +108,7 @@ func (labelsHelper) getLabels(command *EventCommand) []string {
 
 func init() {
 	// NOTE: register quick actions
-	registerQuickAction("label", &LabelQuickAction{})
-	registerQuickAction("unlabel", &UnlabelQuickAction{})
-	registerQuickAction("remove_label", &UnlabelQuickAction{})
+	registerQuickAction("label", autoLogMiddleware{&LabelQuickAction{}})
+	registerQuickAction("unlabel", autoLogMiddleware{&UnlabelQuickAction{}})
+	registerQuickAction("remove_label", autoLogMiddleware{&UnlabelQuickAction{}})
 }

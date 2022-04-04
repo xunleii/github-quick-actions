@@ -26,11 +26,7 @@ func (qa AssignQuickAction) TriggerOnEvents() []EventType {
 	return []EventType{EventTypeIssue, EventTypeIssueComment, EventTypePullRequest, EventTypePullRequestReviewComment}
 }
 func (qa AssignQuickAction) HandleCommand(ctx *EventContext, command *EventCommand) error {
-	logger := zerolog.Ctx(ctx).With().
-		Str("quick_action", "assign").
-		Logger()
-
-	logger.Info().Msgf("handle `/assign` (args: %v)", command.Arguments)
+	logger := zerolog.Ctx(ctx)
 
 	assignees := qa.getAssignees(command)
 	if len(assignees) == 0 {
@@ -55,11 +51,7 @@ func (qa AssignQuickAction) HandleCommand(ctx *EventContext, command *EventComma
 }
 
 func (qa UnassignQuickAction) HandleCommand(ctx *EventContext, command *EventCommand) error {
-	logger := zerolog.Ctx(ctx).With().
-		Str("quick_action", "unassign").
-		Logger()
-
-	logger.Info().Msgf("handle `/unassign` (args: %v)", command.Arguments)
+	logger := zerolog.Ctx(ctx)
 
 	var assignees []string
 	if len(command.Arguments) == 0 {
@@ -144,6 +136,6 @@ func (assigneesHelper) getAssignees(command *EventCommand) []string {
 
 func init() {
 	// NOTE: register quick actions
-	registerQuickAction("assign", &AssignQuickAction{})
-	registerQuickAction("unassign", &UnassignQuickAction{})
+	registerQuickAction("assign", autoLogMiddleware{&AssignQuickAction{}})
+	registerQuickAction("unassign", autoLogMiddleware{&UnassignQuickAction{}})
 }
