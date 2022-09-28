@@ -3,7 +3,7 @@ module xnku.be/github-quick-actions
 go 1.17
 
 require (
-	github.com/alecthomas/kong v0.2.18
+	github.com/alecthomas/kong v0.6.1
 	github.com/aws/aws-lambda-go v1.27.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.11.0
 	github.com/cucumber/godog v0.12.2
@@ -17,7 +17,7 @@ require (
 	github.com/prometheus/common v0.32.1
 	github.com/rs/zerolog v1.26.0
 	github.com/shurcooL/githubv4 v0.0.0-20211117020012-5800b9de5b8b
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.2
 	github.com/thoas/go-funk v0.9.1
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 )
@@ -51,5 +51,5 @@ require (
 	golang.org/x/sys v0.0.0-20210925032602-92d5a993a665 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
