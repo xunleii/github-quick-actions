@@ -7,4 +7,4 @@ on:
 jobs:
   terraform:
     name: IaaS - Terraform CI (for pull requests)
-    uses: xunleii/github-actions-grimoire/.github/workflows/terraform.pull_requests.yaml@ef77ef160b177b1305af17a4e8ab9b560c2541da
+    uses: xunleii/github-actions-grimoire/.github/workflows/terraform.pull_requests.yaml@0ab2cd93e86642397ecdfb2da1e5b97594ab9905
