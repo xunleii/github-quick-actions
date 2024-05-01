@@ -43,7 +43,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
-      - uses: actions/download-artifact@f023be2c48cc18debc3bacd34cb396e0295e2869 # renovate: tag=v2.1.0
+      - uses: actions/download-artifact@cbed621e49e4c01b044d60f6c80ea4ed6328b281 # v2.1.1
         with:
           name: github-quick-actions
 
