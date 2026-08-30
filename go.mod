@@ -9,7 +9,7 @@ require (
 	github.com/cucumber/godog v0.12.2
 	github.com/google/go-github/v39 v39.2.0
 	github.com/google/uuid v1.3.0
-	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/mux v1.8.1
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/improbable-eng/go-httpwares v0.0.0-20200609095714-edc8019f93cc
